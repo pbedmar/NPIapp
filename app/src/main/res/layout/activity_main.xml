@@ -1,18 +1,181 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:id="@+id/welcome_card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:drawable/dialog_holo_light_frame">
+
+                <RelativeLayout
+                    android:id="@+id/welcome_banner"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:id="@+id/user_logo"
+                        android:layout_width="45dp"
+                        android:layout_height="45dp"
+                        android:src="@drawable/ic_baseline_person_pin_24"/>
+
+                    <TextView
+                        android:id="@+id/welcome_text"
+                        style="@android:style/TextAppearance.DeviceDefault.DialogWindowTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="5dp"
+                        android:text="@string/welcome_text"
+                        android:textColor="@color/black"
+                        android:layout_toRightOf="@id/user_logo"
+                        android:textSize="30sp" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginEnd="5dp"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/saldo_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            style="@android:style/TextAppearance.DeviceDefault.Medium"
+                            android:gravity="center"
+                            android:text="@string/saldo_text" />
+
+                        <TextView
+                            android:id="@+id/saldo_value_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            style="@android:style/TextAppearance.DeviceDefault.Medium"
+                            android:gravity="center"
+                            android:text="@string/saldo_value_text" />
+
+                        <TextView
+                            android:id="@+id/euro_symbol_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            style="@android:style/TextAppearance.DeviceDefault.Medium"
+                            android:gravity="center"
+                            android:text="@string/euro_symbol_text" />
+
+                    </LinearLayout>
+
+                </RelativeLayout>
+
+                <ImageView
+                    android:id="@+id/etsiit_image"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_below="@+id/welcome_banner"
+                    android:adjustViewBounds="true"
+                    android:src="@drawable/etsiit" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/etsiit_image"
+                    android:padding="5dp"
+                    style="@android:style/TextAppearance.DeviceDefault"
+                    android:text="@string/welcome_description" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:drawable/dialog_holo_light_frame">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toStartOf="@+id/guidance_button"
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="@android:style/TextAppearance.DeviceDefault.Large"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="5dp"
+                        android:text="@string/guidance_title" />
+
+                    <TextView
+                        style="@android:style/TextAppearance.DeviceDefault"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="5dp"
+                        android:text="@string/guidance_description" />
+
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/guidance_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginEnd="7dp"
+                    android:text="Ir" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:drawable/dialog_holo_light_frame">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toStartOf="@+id/cantine_menu_button"
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="@android:style/TextAppearance.DeviceDefault.Large"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="5dp"
+                        android:text="@string/cantine_menu_title" />
+
+                    <TextView
+                        style="@android:style/TextAppearance.DeviceDefault"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="5dp"
+                        android:text="@string/cantine_menu_description" />
+
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/cantine_menu_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginEnd="7dp"
+                    android:text="Ir" />
+
+            </RelativeLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+
+</LinearLayout>

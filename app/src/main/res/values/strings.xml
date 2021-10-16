@@ -1,3 +1,12 @@
 <resources>
-    <string name="app_name">NPIapp</string>
+    <string name="app_name">ETSIIT Campus</string>
+    <string name="welcome_text"><b>¡Bienvenido!</b></string>
+    <string name="saldo_text">Saldo:\u0020</string>
+    <string name="saldo_value_text">0.0</string>
+    <string name="euro_symbol_text">\u0020€</string>
+    <string name="welcome_description">¡Bienvenido a la nueva app de la escuela! Descubre sus funciones más abajo, pronto se irán añadiendo más.</string>
+    <string name="guidance_title">Guiado punto a punto</string>
+    <string name="guidance_description">Conoce la ruta entre dos puntos de la ETSIIT. ¡Ahora con realidad virtual!</string>
+    <string name="cantine_menu_title">Comida para llevar</string>
+    <string name="cantine_menu_description">Configura tu menú para llevar, eligiendo los platos que desees entre las opciones disponibles.</string>
 </resources>
