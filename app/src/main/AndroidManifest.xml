@@ -10,6 +10,16 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Npiapp">
         <activity
+            android:name=".CanteenMenu"
+            android:exported="true"
+            android:label="@string/canteen_menu_title"
+            android:parentActivityName=".MainActivity" />
+        <activity
+            android:name=".Guidance"
+            android:exported="true"
+            android:label="@string/guidance_title"
+            android:parentActivityName=".MainActivity" />
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
