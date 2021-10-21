@@ -3,13 +3,16 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="app/src/main/res/layout/activity_cantina_menu.xml" value="0.2578125" />
+        <entry key="app/src/main/res/layout/activity_canteen_menu.xml" value="0.18802083333333333" />
+        <entry key="app/src/main/res/layout/activity_canteen_menu_creator.xml" value="0.1572840664905244" />
+        <entry key="app/src/main/res/layout/activity_cantina_menu.xml" value="0.1" />
         <entry key="app/src/main/res/layout/activity_cantine_menu.xml" value="0.1" />
         <entry key="app/src/main/res/layout/activity_guidance.xml" value="0.24375" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.25" />
         <entry key="app/src/main/res/layout/content_cantine_menu.xml" value="0.1" />
         <entry key="app/src/main/res/layout/fragment_first.xml" value="0.1" />
         <entry key="app/src/main/res/layout/fragment_second.xml" value="0.11481481481481481" />
+        <entry key="app/src/main/res/layout/spinner_element.xml" value="0.23020833333333332" />
       </map>
     </option>
   </component>

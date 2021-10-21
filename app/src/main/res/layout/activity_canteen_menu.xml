@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".CanteenMenu">
+
+    <ListView
+        android:id="@+id/cantina_orders"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/add_order_layout"
+        android:layout_alignParentStart="true" />
+
+    <RelativeLayout
+        android:id="@+id/add_order_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/order_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="7dp"
+            android:onClick="launchCanteenMenuCreator"
+            android:text="Encargar" />
+
+        <Spinner
+            android:id="@+id/date_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="0dp"
+            android:layout_toStartOf="@id/order_button" />
+
+    </RelativeLayout>
+
+</RelativeLayout>
+
+    <!--<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+    <!--    android:orientation="vertical"-->
+    <!--    android:layout_width="fill_parent"-->
+    <!--    android:layout_height="fill_parent">-->
+    <!--    <LinearLayout-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_width="fill_parent"-->
+    <!--        android:weightSum="6"-->
+    <!--        android:orientation="horizontal">-->
+    <!--        <FrameLayout-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--            android:layout_width="wrap_content"-->
+    <!--            android:layout_margin="5dp"-->
+    <!--            android:layout_weight="2"-->
+    <!--            android:id="@+id/ball_1"-->
+    <!--            android:background="#0000FF">-->
+    <!--            <TextView-->
+    <!--                android:layout_width="fill_parent"-->
+    <!--                android:layout_height="fill_parent"-->
+    <!--                android:id="@+id/number_1"-->
+    <!--                android:gravity="center"-->
+    <!--                android:layout_gravity="center_vertical"-->
+    <!--                android:textColor="@android:color/white"/>-->
+    <!--        </FrameLayout>-->
+    <!--        <FrameLayout-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--            android:layout_width="wrap_content"-->
+    <!--            android:layout_margin="5dp"-->
+    <!--            android:layout_weight="2"-->
+    <!--            android:id="@+id/ball_2"-->
+    <!--            android:background="#0000FF">-->
+    <!--            <TextView-->
+    <!--                android:layout_width="fill_parent"-->
+    <!--                android:layout_height="fill_parent"-->
+    <!--                android:id="@+id/number_2"-->
+    <!--                android:gravity="center"-->
+    <!--                android:layout_gravity="center_vertical"-->
+    <!--                android:textColor="@android:color/white"/>-->
+    <!--        </FrameLayout>-->
+    <!--        <FrameLayout-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--            android:layout_width="wrap_content"-->
+    <!--            android:layout_margin="5dp"-->
+    <!--            android:layout_weight="2"-->
+    <!--            android:id="@+id/ball_3"-->
+    <!--            android:background="#0000FF">-->
+    <!--            <TextView-->
+    <!--                android:layout_width="fill_parent"-->
+    <!--                android:layout_height="fill_parent"-->
+    <!--                android:id="@+id/number_3"-->
+    <!--                android:gravity="center"-->
+    <!--                android:layout_gravity="center_vertical"-->
+    <!--                android:textColor="@android:color/white"/>-->
+    <!--        </FrameLayout>-->
+    <!--    </LinearLayout>-->
+
+    <!--    <LinearLayout-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_width="fill_parent"-->
+    <!--        android:weightSum="6"-->
+    <!--        android:orientation="horizontal">-->
+    <!--        <FrameLayout-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--            android:layout_width="wrap_content"-->
+    <!--            android:layout_margin="5dp"-->
+    <!--            android:layout_weight="2"-->
+    <!--            android:id="@+id/ball_4"-->
+    <!--            android:background="#0000FF">-->
+    <!--            <TextView-->
+    <!--                android:layout_width="fill_parent"-->
+    <!--                android:layout_height="fill_parent"-->
+    <!--                android:id="@+id/number_4"-->
+    <!--                android:gravity="center"-->
+    <!--                android:layout_gravity="center_vertical"-->
+    <!--                android:textColor="@android:color/white"/>-->
+    <!--        </FrameLayout>-->
+    <!--        <FrameLayout-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--            android:layout_width="wrap_content"-->
+    <!--            android:layout_margin="5dp"-->
+    <!--            android:id="@+id/ball_5"-->
+    <!--            android:layout_weight="2"-->
+    <!--            android:background="#0000FF">-->
+    <!--            <TextView-->
+    <!--                android:layout_width="fill_parent"-->
+    <!--                android:layout_height="fill_parent"-->
+    <!--                android:id="@+id/number_5"-->
+    <!--                android:gravity="center"-->
+    <!--                android:layout_gravity="center_vertical"-->
+    <!--                android:textColor="@android:color/white"/>-->
+    <!--        </FrameLayout>-->
+    <!--        <FrameLayout-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--            android:layout_width="wrap_content"-->
+    <!--            android:layout_margin="5dp"-->
+    <!--            android:id="@+id/ball_6"-->
+    <!--            android:layout_weight="2"-->
+    <!--            android:background="#0000FF">-->
+    <!--            <TextView-->
+    <!--                android:layout_width="fill_parent"-->
+    <!--                android:layout_height="fill_parent"-->
+    <!--                android:id="@+id/number_6"-->
+    <!--                android:gravity="center"-->
+    <!--                android:layout_gravity="center_vertical"-->
+    <!--                android:textColor="@android:color/white"/>-->
+    <!--        </FrameLayout>-->
+    <!--    </LinearLayout>-->
+
+    <!--</LinearLayout>-->
