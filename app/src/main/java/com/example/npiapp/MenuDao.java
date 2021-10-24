@@ -8,8 +8,7 @@ import java.util.List;
 
 @Dao
 public interface MenuDao {
-//    @Query("SELECT * FROM menu WHERE date == :date_")
-//    LiveData<Menu> getMenuOnSpecificDate(String date_);
+
     @Query("SELECT * FROM menu WHERE date == :date_")
     Menu getMenuOnSpecificDate(String date_);
 

@@ -1,33 +1,87 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".CanteenMenuCreator">
 
-    <androidx.cardview.widget.CardView
-        xmlns:card_view="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/first1_card"
-        android:layout_gravity="center"
+    <androidx.cardview.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/order_card"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_gravity="center"
         android:layout_margin="12dp"
+        android:visibility="invisible"
+        card_view:cardBackgroundColor="#FFFF8D"
         card_view:cardCornerRadius="4dp"
-        card_view:cardElevation="5dp"
-        card_view:cardBackgroundColor="#BFA8FF">
+        card_view:cardElevation="5dp">
 
-        <TextView
-            android:id="@+id/info_text"
-            android:gravity="center"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:layout_margin="5dp">
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            <TextView
+                android:id="@+id/summary_text"
+                style="@android:style/TextAppearance.DeviceDefault.Large"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="Resumen del pedido"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:id="@+id/chosen_meals_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@id/summary_text"
+                android:layout_marginTop="3dp"
+                android:orientation="vertical">
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_centerInParent="true"
+                android:layout_marginBottom="5dp"
+                android:gravity="center_horizontal"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@android:style/TextAppearance.DeviceDefault.Medium"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Total: "
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/total_price_text"
+                    style="@android:style/TextAppearance.DeviceDefault.Medium"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textStyle="bold" />
+
+                <TextView
+                    style="@android:style/TextAppearance.DeviceDefault.Medium"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/euro_symbol_text"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+
+        </RelativeLayout>
+
     </androidx.cardview.widget.CardView>
 
 
+    <RelativeLayout
+        android:id="@+id/menu_options_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
-</LinearLayout>
+</RelativeLayout>

@@ -26,8 +26,7 @@ public class MenuViewModel extends AndroidViewModel {
     }
 
     void setOrderOnSpecificDate(String date_, int ordered_first1, int ordered_first2, int ordered_main1,
-                                int ordered_main2, int ordered_dessert1, int ordered_dessert2)
-    {
+                                int ordered_main2, int ordered_dessert1, int ordered_dessert2) {
         mMenuDao.setOrderOnSpecificDate(date_, ordered_first1, ordered_first2, ordered_main1,
                 ordered_main2, ordered_dessert1, ordered_dessert2);
     }
