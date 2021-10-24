@@ -5,6 +5,7 @@ import androidx.cardview.widget.CardView;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.animation.ObjectAnimator;
+import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -29,6 +30,7 @@ public class CanteenMenuCreator extends AppCompatActivity implements SensorEvent
     private String[] mealsTypes = {"Primero", "Primero", "Segundo", "Segundo", "Postre", "Postre"};
     private int[] cardsIds = new int[numberOfPossibleMeals];
     float totalOrderPrice = 0;
+    public static final String REPLY = "npiapp.CanteenMenuCreator.REPLY";
 
     private SensorManager sensorManager;
     private Sensor sensorAccelerometer;
@@ -122,10 +124,10 @@ public class CanteenMenuCreator extends AppCompatActivity implements SensorEvent
         cardAnimation(relativeLayout, orderedMeals[currentCard], "translationX");
 
         if (currentCard == 5) {
-            if (sensorManager != null) {
-                sensorManager.unregisterListener(this, sensorAccelerometer);
-                sensorManager = null;
-            }
+//            if (sensorManager != null) {
+//                sensorManager.unregisterListener(this, sensorAccelerometer);
+//                sensorManager = null;
+//            }
 
             showOrderSummary();
         }
@@ -133,9 +135,9 @@ public class CanteenMenuCreator extends AppCompatActivity implements SensorEvent
         currentCard++;
     }
 
-    void showOrderSummary() {
-        CardView cardView = (CardView) findViewById(R.id.order_card);
-        cardView.setVisibility(View.VISIBLE);
+    protected void showOrderSummary() {
+        LinearLayout linearLayout_order = (LinearLayout) findViewById(R.id.order_layout);
+        linearLayout_order.setVisibility(View.VISIBLE);
 
         LinearLayout linearLayout = (LinearLayout) findViewById(R.id.chosen_meals_layout);
 
@@ -193,6 +195,28 @@ public class CanteenMenuCreator extends AppCompatActivity implements SensorEvent
                 }
             }
         }
+    }
+
+    public int boolToInt(boolean b) {
+        return b ? 1 : 0;
+    }
+
+    public void cancelOrder(View view) {
+        Intent replyIntent = new Intent();
+        setResult(RESULT_CANCELED, replyIntent);
+        finish();
+    }
+
+    public void confirmOrder(View view) {
+
+        mMenuViewModel.setOrderOnSpecificDate(date, boolToInt(orderedMeals[0]),
+                boolToInt(orderedMeals[1]), boolToInt(orderedMeals[2]), boolToInt(orderedMeals[3]),
+                boolToInt(orderedMeals[4]), boolToInt(orderedMeals[5]), 1);
+
+
+        Intent replyIntent = new Intent();
+        setResult(RESULT_CANCELED, replyIntent);
+        finish();
     }
 
     @Override
