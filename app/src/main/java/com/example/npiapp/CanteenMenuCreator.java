@@ -1,5 +1,6 @@
 package com.example.npiapp;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.lifecycle.ViewModelProvider;
@@ -16,6 +17,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class CanteenMenuCreator extends AppCompatActivity implements SensorEventListener {
 
@@ -36,6 +38,8 @@ public class CanteenMenuCreator extends AppCompatActivity implements SensorEvent
     private Sensor sensorAccelerometer;
     private long lastUpdate = 0;
     private long lastDetected = 0;
+
+    public static final int AUTENTICATION_REQUEST = 1;
 
 
     @Override
@@ -214,9 +218,24 @@ public class CanteenMenuCreator extends AppCompatActivity implements SensorEvent
                 boolToInt(orderedMeals[4]), boolToInt(orderedMeals[5]), 1);
 
 
-        Intent replyIntent = new Intent();
-        setResult(RESULT_CANCELED, replyIntent);
-        finish();
+        Intent intent = new Intent(this, FingerPrint.class);
+        startActivityForResult(intent, AUTENTICATION_REQUEST);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == AUTENTICATION_REQUEST) {
+            if(resultCode == RESULT_OK) {
+                Toast.makeText(getApplicationContext(), "Autenticacion OK",
+                        Toast.LENGTH_SHORT);
+            }
+            else if(resultCode == RESULT_CANCELED) {
+                Intent replyIntent = new Intent();
+                setResult(RESULT_CANCELED, replyIntent);
+                finish();
+            }
+        }
     }
 
     @Override
