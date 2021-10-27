@@ -21,4 +21,21 @@
     <string name="title_fingerprint">One-touch Sign In</string>
     <string name="desc_fingerprint">Please place your fingertip on the scanner to verify your identity</string>
     <string name="note">(Fingerprint sign in makes your app login much faster. Your device should have at least one fingerprint registered in device settings)</string>
+
+    <string name="title_eliga_ruta">Eliga la ruta:</string>
+    <string name="title_inicio_ruta">Inicio:</string>
+    <string name="label_button_qr">QR</string>
+    <string name="campo_obligatorio">* Campo obligatorio</string>
+    <string name="title_fin_ruta">Fin:</string>
+    <string name="label_button_iniciar_ruta">Iniciar ruta</string>
+    <string name="prompt_inicio">Seleccione un inicio</string>
+    <string name="prompt_fin">Seleccione un final</string>
+    <string-array name="rutas_inicio">
+        <item></item>
+        <item>Entrada ETSIIT</item>
+    </string-array>
+    <string-array name="rutas_fin">
+        <item></item>
+        <item>Despacho Marcelino</item>
+    </string-array>
 </resources>
