@@ -1,5 +1,7 @@
 package com.example.npiapp;
 
+import static java.lang.Math.abs;
+
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
@@ -67,7 +69,7 @@ public class CanteenMenuCreator extends AppCompatActivity implements SensorEvent
 
         // start motion detection
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-        sensorAccelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        sensorAccelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
         sensorManager.registerListener(this, sensorAccelerometer, SensorManager.SENSOR_DELAY_GAME);
 
     }
@@ -181,21 +183,28 @@ public class CanteenMenuCreator extends AppCompatActivity implements SensorEvent
                     lastUpdate = currentTime;
 
                     float x = sensorEvent.values[0];
+                    float z = sensorEvent.values[2];
+                    Log.i("Info_acce_X", Float.toString(x));
+                    Log.i("Info_acce_Z", Float.toString(z));
 
-                    if (x > 10) {
-                        Log.d("pedro", "X Right axis: " + x);
-                        Log.d("pedro", "Right shake detected");
-                        orderedMeals[currentCard] = true;
-                        lastDetected = System.currentTimeMillis();
-                        nextCard();
-                    } else if (x < -10) {
-                        Log.d("pedro", "X Left axis: " + x);
-                        Log.d("pedro", "Left shake detected");
-                        orderedMeals[currentCard] = false;
-                        lastDetected = System.currentTimeMillis();
-                        nextCard();
+                    if(abs(x) > abs(z)) {
+                        if (x < -5) {
+                            Log.d("pedro", "X Left axis: " + x);
+                            Log.d("pedro", "Left shake detected");
+                            orderedMeals[currentCard] = false;
+                            lastDetected = System.currentTimeMillis();
+                            nextCard();
+                        }
                     }
-
+                    else {
+                        if (z > 5) {
+                            Log.d("pedro", "X Right axis: " + x);
+                            Log.d("pedro", "Right shake detected");
+                            orderedMeals[currentCard] = true;
+                            lastDetected = System.currentTimeMillis();
+                            nextCard();
+                        }
+                    }
                 }
             }
         }
