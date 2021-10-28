@@ -2,9 +2,11 @@ package com.example.npiapp;
 
 import static java.lang.Math.abs;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.animation.ObjectAnimator;
@@ -20,6 +22,10 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.biometric.BiometricPrompt;
+
+import java.util.concurrent.Executor;
 
 public class CanteenMenuCreator extends AppCompatActivity implements SensorEventListener {
 
@@ -43,11 +49,58 @@ public class CanteenMenuCreator extends AppCompatActivity implements SensorEvent
 
     public static final int AUTENTICATION_REQUEST = 1;
 
+    private Executor executor;
+    private BiometricPrompt biometricPrompt;
+    private BiometricPrompt.PromptInfo promptInfo;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_canteen_menu_creator);
+
+        ///////////////////////////////////////////////
+
+        executor = ContextCompat.getMainExecutor(this);
+        biometricPrompt = new BiometricPrompt(CanteenMenuCreator.this,
+                executor, new BiometricPrompt.AuthenticationCallback() {
+            @Override
+            public void onAuthenticationError(int errorCode,
+                                              @NonNull CharSequence errString) {
+                super.onAuthenticationError(errorCode, errString);
+                Toast.makeText(getApplicationContext(),
+                        "Authentication error: " + errString, Toast.LENGTH_SHORT)
+                        .show();
+            }
+
+            @Override
+            public void onAuthenticationSucceeded(
+                    @NonNull BiometricPrompt.AuthenticationResult result) {
+                super.onAuthenticationSucceeded(result);
+                Toast.makeText(getApplicationContext(),
+                        "Authentication succeeded!", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onAuthenticationFailed() {
+                super.onAuthenticationFailed();
+                Toast.makeText(getApplicationContext(), "Authentication failed",
+                        Toast.LENGTH_SHORT)
+                        .show();
+            }
+        });
+
+        promptInfo = new BiometricPrompt.PromptInfo.Builder()
+                .setTitle("Biometric login for my app")
+                .setSubtitle("Log in using your biometric credential")
+                .setNegativeButtonText("Use account password")
+                .build();
+
+        // Prompt appears when user clicks "Log in".
+        // Consider integrating with the keystore to unlock cryptographic operations,
+        // if needed by your app.
+
+        ///////////////////////////////////////////////
 
         // download extras received from calling activity
         Bundle extras = getIntent().getExtras();
@@ -222,13 +275,7 @@ public class CanteenMenuCreator extends AppCompatActivity implements SensorEvent
 
     public void confirmOrder(View view) {
 
-        mMenuViewModel.setOrderOnSpecificDate(date, boolToInt(orderedMeals[0]),
-                boolToInt(orderedMeals[1]), boolToInt(orderedMeals[2]), boolToInt(orderedMeals[3]),
-                boolToInt(orderedMeals[4]), boolToInt(orderedMeals[5]), 1);
-
-
-        Intent intent = new Intent(this, FingerPrint.class);
-        startActivityForResult(intent, AUTENTICATION_REQUEST);
+        biometricPrompt.authenticate(promptInfo);
     }
 
     @Override
@@ -236,8 +283,13 @@ public class CanteenMenuCreator extends AppCompatActivity implements SensorEvent
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == AUTENTICATION_REQUEST) {
             if(resultCode == RESULT_OK) {
-                Toast.makeText(getApplicationContext(), "Autenticacion OK",
-                        Toast.LENGTH_SHORT);
+                mMenuViewModel.setOrderOnSpecificDate(date, boolToInt(orderedMeals[0]),
+                        boolToInt(orderedMeals[1]), boolToInt(orderedMeals[2]), boolToInt(orderedMeals[3]),
+                        boolToInt(orderedMeals[4]), boolToInt(orderedMeals[5]), 1);
+
+                Intent replyIntent = new Intent();
+                setResult(RESULT_OK, replyIntent);
+                finish();
             }
             else if(resultCode == RESULT_CANCELED) {
                 Intent replyIntent = new Intent();

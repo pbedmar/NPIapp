@@ -91,6 +91,9 @@ public class FingerPrint extends AppCompatActivity {
                             FingerprintManager.CryptoObject cryptoObject = new FingerprintManager.CryptoObject(cipher);
                             FingerprintHandler helper = new FingerprintHandler(this);
                             helper.startAuth(fingerprintManager, cryptoObject);
+                            if(helper.numFallos == helper.MAX_NUM_FALLOS) {
+                                helper.stopCancel();
+                            }
                         }
                     }
                 }
@@ -165,7 +168,7 @@ public class FingerPrint extends AppCompatActivity {
         private Context context;
 
         private int numFallos;
-        private final int MAX_NUM_FALLOS = 3;
+        private final int MAX_NUM_FALLOS = 5;
 
 
         // Constructor
@@ -200,17 +203,22 @@ public class FingerPrint extends AppCompatActivity {
         public void onAuthenticationFailed() {
             numFallos += 1;
             this.update("Fingerprint Authentication failed.", false);
-            if(numFallos == MAX_NUM_FALLOS) {
-                Intent replyIntent = new Intent();
-                setResult(RESULT_CANCELED, replyIntent);
-                finish();
-            }
         }
 
         @Override
         public void onAuthenticationSucceeded(FingerprintManager.AuthenticationResult result) {
             this.update("Fingerprint Authentication succeeded.", true);
 
+            stoptOK();
+        }
+
+        public void  stopCancel() {
+            Intent replyIntent = new Intent();
+            setResult(RESULT_CANCELED, replyIntent);
+            finish();
+        }
+
+        public void stoptOK() {
             Intent replyIntent = new Intent();
             setResult(RESULT_OK, replyIntent);
             finish();
