@@ -27,14 +27,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Npiapp">
         <activity
-            android:name=".FingerPrint"
-            android:exported="true"
-            android:parentActivityName=".CanteenMenuCreator">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.npiapp.CanteenMenuCreator"/>
-        </activity>
-        <activity
             android:name=".CanteenMenuCreator"
             android:exported="true" />
         <activity

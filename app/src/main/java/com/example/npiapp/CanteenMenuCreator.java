@@ -312,27 +312,6 @@ public class CanteenMenuCreator extends AppCompatActivity implements SensorEvent
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == AUTENTICATION_REQUEST) {
-            if(resultCode == RESULT_OK) {
-                mMenuViewModel.setOrderOnSpecificDate(date, boolToInt(orderedMeals[0]),
-                        boolToInt(orderedMeals[1]), boolToInt(orderedMeals[2]), boolToInt(orderedMeals[3]),
-                        boolToInt(orderedMeals[4]), boolToInt(orderedMeals[5]), 1);
-
-                Intent replyIntent = new Intent();
-                setResult(RESULT_OK, replyIntent);
-                finish();
-            }
-            else if(resultCode == RESULT_CANCELED) {
-                Intent replyIntent = new Intent();
-                setResult(RESULT_CANCELED, replyIntent);
-                finish();
-            }
-        }
-    }
-
-    @Override
     public void onAccuracyChanged(Sensor sensor, int i) {
 
     }
