@@ -91,6 +91,10 @@ public class CanteenMenuCreator extends AppCompatActivity implements SensorEvent
                 Toast.makeText(getApplicationContext(),
                         "Authentication error: " + errString, Toast.LENGTH_SHORT)
                         .show();
+
+                Intent replyIntent = new Intent();
+                setResult(RESULT_CANCELED, replyIntent);
+                finish();
             }
 
             @Override
@@ -99,6 +103,14 @@ public class CanteenMenuCreator extends AppCompatActivity implements SensorEvent
                 super.onAuthenticationSucceeded(result);
                 Toast.makeText(getApplicationContext(),
                         "Authentication succeeded!", Toast.LENGTH_SHORT).show();
+
+                mMenuViewModel.setOrderOnSpecificDate(date, boolToInt(orderedMeals[0]),
+                        boolToInt(orderedMeals[1]), boolToInt(orderedMeals[2]), boolToInt(orderedMeals[3]),
+                        boolToInt(orderedMeals[4]), boolToInt(orderedMeals[5]), 1);
+
+                Intent replyIntent = new Intent();
+                setResult(RESULT_OK, replyIntent);
+                finish();
             }
 
             @Override
