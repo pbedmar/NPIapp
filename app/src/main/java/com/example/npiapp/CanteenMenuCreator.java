@@ -216,11 +216,6 @@ public class CanteenMenuCreator extends AppCompatActivity implements SensorEvent
         cardAnimation(relativeLayout, orderedMeals[currentCard], "translationX");
 
         if (currentCard == 5) {
-//            if (sensorManager != null) {
-//                sensorManager.unregisterListener(this, sensorAccelerometer);
-//                sensorManager = null;
-//            }
-
             showOrderSummary();
         }
 
@@ -260,35 +255,36 @@ public class CanteenMenuCreator extends AppCompatActivity implements SensorEvent
     public void onSensorChanged(SensorEvent sensorEvent) {
         Sensor usedSensor = sensorEvent.sensor;
 
-        if (usedSensor == sensorAccelerometer) {
-            long currentTime = System.currentTimeMillis();
+        if (currentCard < 6) {
+            if (usedSensor == sensorAccelerometer) {
+                long currentTime = System.currentTimeMillis();
 
-            if ((currentTime - lastDetected) > 1000) {
+                if ((currentTime - lastDetected) > 1000) {
 
-                if ((currentTime - lastUpdate) > 100) {
-                    lastUpdate = currentTime;
+                    if ((currentTime - lastUpdate) > 100) {
+                        lastUpdate = currentTime;
 
-                    float x = sensorEvent.values[0];
-                    float z = sensorEvent.values[2];
-                    Log.i("Info_acce_X", Float.toString(x));
-                    Log.i("Info_acce_Z", Float.toString(z));
+                        float x = sensorEvent.values[0];
+                        float z = sensorEvent.values[2];
+                        Log.i("Info_acce_X", Float.toString(x));
+                        Log.i("Info_acce_Z", Float.toString(z));
 
-                    if(abs(x) > abs(z)) {
-                        if (x < -5) {
-                            Log.d("pedro", "X Left axis: " + x);
-                            Log.d("pedro", "Left shake detected");
-                            orderedMeals[currentCard] = false;
-                            lastDetected = System.currentTimeMillis();
-                            nextCard();
-                        }
-                    }
-                    else {
-                        if (z > 5) {
-                            Log.d("pedro", "X Right axis: " + x);
-                            Log.d("pedro", "Right shake detected");
-                            orderedMeals[currentCard] = true;
-                            lastDetected = System.currentTimeMillis();
-                            nextCard();
+                        if (abs(x) > abs(z)) {
+                            if (x < -5) {
+                                Log.d("pedro", "X Left axis: " + x);
+                                Log.d("pedro", "Left shake detected");
+                                orderedMeals[currentCard] = false;
+                                lastDetected = System.currentTimeMillis();
+                                nextCard();
+                            }
+                        } else {
+                            if (z > 5) {
+                                Log.d("pedro", "X Right axis: " + x);
+                                Log.d("pedro", "Right shake detected");
+                                orderedMeals[currentCard] = true;
+                                lastDetected = System.currentTimeMillis();
+                                nextCard();
+                            }
                         }
                     }
                 }
@@ -307,7 +303,6 @@ public class CanteenMenuCreator extends AppCompatActivity implements SensorEvent
     }
 
     public void confirmOrder(View view) {
-
         biometricPrompt.authenticate(promptInfo);
     }
 
