@@ -192,16 +192,16 @@ public class CanteenMenuCreator extends AppCompatActivity implements SensorEvent
             magnitude = 10000f;
         }
 
-        ObjectAnimator animation = ObjectAnimator.ofFloat(relativeLayout, "translationX", magnitude);
+        ObjectAnimator animation = ObjectAnimator.ofFloat(relativeLayout, axis, magnitude);
         animation.setDuration(1500);
         animation.start();
 
     }
 
-    protected void nextCard() {
+    protected void nextCard(String animationAxis) {
 
         RelativeLayout relativeLayout = (RelativeLayout) findViewById(cardsIds[currentCard]);
-        cardAnimation(relativeLayout, orderedMeals[currentCard], "translationX");
+        cardAnimation(relativeLayout, orderedMeals[currentCard], animationAxis);
 
         if (currentCard == 5) {
 //            if (sensorManager != null) {
@@ -267,7 +267,7 @@ public class CanteenMenuCreator extends AppCompatActivity implements SensorEvent
                             Log.d("pedro", "Left shake detected");
                             orderedMeals[currentCard] = false;
                             lastDetected = System.currentTimeMillis();
-                            nextCard();
+                            nextCard("translationX");
                         }
                     }
                     else {
@@ -276,7 +276,7 @@ public class CanteenMenuCreator extends AppCompatActivity implements SensorEvent
                             Log.d("pedro", "Right shake detected");
                             orderedMeals[currentCard] = true;
                             lastDetected = System.currentTimeMillis();
-                            nextCard();
+                            nextCard("translationY");
                         }
                     }
                 }
