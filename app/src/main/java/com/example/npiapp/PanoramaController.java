@@ -16,6 +16,7 @@ import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -125,6 +126,11 @@ public class PanoramaController extends AppCompatActivity implements SensorEvent
 
         // Se carga la imagen seleccionada
         panorama.cargarImagen();
+        if(panorama.getPosRuta() == panorama.getLenRuta()-1) {
+            Toast.makeText(getApplicationContext(),
+                    "Has llegado al destino", Toast.LENGTH_LONG)
+                    .show();
+        }
 
         // Redibuja el lienzo
         panorama.invalidate();
@@ -221,6 +227,11 @@ public class PanoramaController extends AppCompatActivity implements SensorEvent
                     if(hotspot.getClass() == HotspotJump.class) {
                         // Cambiamos de escena
                         panorama.cambiarEscena((HotspotJump) hotspot);
+                        if(panorama.getPosRuta() == panorama.getLenRuta()-1) {
+                            Toast.makeText(getApplicationContext(),
+                                    "Has llegado al destino", Toast.LENGTH_LONG)
+                                    .show();
+                        }
 
                         // Fijamos el nuevo texto de la escena
                         TextView p = findViewById(R.id.title_escena);

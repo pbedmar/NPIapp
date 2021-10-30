@@ -34,6 +34,7 @@ import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.lang.Math;
 
@@ -193,6 +194,10 @@ public class PanoramaView extends View {
         // Redibuja el lienzo
         invalidate();
     }
+
+    public Integer getPosRuta() { return posRuta; }
+
+    public Integer getLenRuta() { return ruta.size(); }
 
     public void cargarImagen() {
         // Crear mapa de bits a partir de la imagen
