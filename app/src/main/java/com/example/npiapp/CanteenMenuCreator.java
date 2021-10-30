@@ -1,6 +1,7 @@
 package com.example.npiapp;
 
 import static java.lang.Math.abs;
+import static java.lang.Math.round;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -107,6 +108,8 @@ public class CanteenMenuCreator extends AppCompatActivity implements SensorEvent
                 mMenuViewModel.setOrderOnSpecificDate(date, boolToInt(orderedMeals[0]),
                         boolToInt(orderedMeals[1]), boolToInt(orderedMeals[2]), boolToInt(orderedMeals[3]),
                         boolToInt(orderedMeals[4]), boolToInt(orderedMeals[5]), 1);
+
+                MainActivity.saldo = MainActivity.saldo - totalOrderPrice;
 
                 Intent replyIntent = new Intent();
                 setResult(RESULT_OK, replyIntent);
@@ -245,6 +248,7 @@ public class CanteenMenuCreator extends AppCompatActivity implements SensorEvent
                 Log.d("pedro", "plato añadido a la cuenta");
             }
         }
+        totalOrderPrice = round(totalOrderPrice*100.0f)/100.0f;
 
         TextView totalPrice = (TextView) findViewById(R.id.total_price_text);
         totalPrice.setText(Float.toString(totalOrderPrice));
@@ -303,7 +307,18 @@ public class CanteenMenuCreator extends AppCompatActivity implements SensorEvent
     }
 
     public void confirmOrder(View view) {
-        biometricPrompt.authenticate(promptInfo);
+        if(MainActivity.saldo < totalOrderPrice) {
+            Toast.makeText(getApplicationContext(),
+                    "Saldo insuficiente", Toast.LENGTH_LONG)
+                    .show();
+
+            Intent replyIntent = new Intent();
+            setResult(RESULT_CANCELED, replyIntent);
+            finish();
+        }
+        else{
+            biometricPrompt.authenticate(promptInfo);
+        }
     }
 
     @Override
