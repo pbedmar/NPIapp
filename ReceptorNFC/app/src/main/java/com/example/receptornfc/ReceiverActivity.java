@@ -8,16 +8,23 @@ import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class ReceiverActivity extends AppCompatActivity {
 
     public static final String RESPO_NFC = "com.example.emisornfc.RESPONSE";
 
     public static final String MIME_TEXT_PLAIN = "text/plain";
+
+    private Map<String,String> campos;
 
     private NfcAdapter nfcAdapter;
 
@@ -76,24 +83,61 @@ public class ReceiverActivity extends AppCompatActivity {
 
             String inMessage = new String(ndefRecord_0.getPayload());
 
-            Toast.makeText(this, "Recibido" + inMessage, Toast.LENGTH_SHORT).show();
+            campos = procesarMensaje(inMessage);
 
-            String result = procesarMensaje(inMessage);
+            if(campos.get("RESULT").equals("OK")) {
+                TextView TUI = findViewById(R.id.content_TUI);
+                TUI.setText(campos.get("TUI"));
+                TextView PLATOS = findViewById(R.id.content_menu);
+                PLATOS.setText(campos.get("PLATOS"));
+                TextView PRECIO = findViewById(R.id.content_precio);
+                PRECIO.setText(campos.get("PRECIO"));
+            }
+            else if(campos.get("RESULT").equals("ERROR")) {
+                Toast.makeText(this, "Formato erroneo", Toast.LENGTH_LONG).show();
 
-            Intent replyIntent = new Intent(this, SenderActivity.class);
-            replyIntent.putExtra(RESPO_NFC, result);
-            startActivity(replyIntent);
+                Intent replyIntent = new Intent(this, SenderActivity.class);
+                replyIntent.putExtra(RESPO_NFC, campos.get("RESULT"));
+                startActivity(replyIntent);
+            }
         }
     }
 
-    private String procesarMensaje(String inMessage) {
+    private Map<String,String> procesarMensaje(String inMessage) {
         String[] secciones = inMessage.split(";");
-        if(secciones[0].equals("TUI")) {
-            return "OK";
+        Map<String,String> campos = new HashMap<>();
+        if(secciones.length == 6) {
+            if(secciones[0].equals("TUI")) {
+                campos.put("TUI",secciones[1]);
+                if(secciones[2].equals("PLATOS")) {
+                    campos.put("PLATOS",secciones[3]);
+                    if(secciones[4].equals("PRECIO")) {
+                        campos.put("PRECIO",secciones[5]);
+                        campos.put("RESULT","OK");
+                    }
+                    else {
+                        campos.put("RESULT","ERROR");
+                    }
+                }
+                else {
+                    campos.put("RESULT","ERROR");
+                }
+            }
+            else {
+                campos.put("RESULT","ERROR");
+            }
         }
         else {
-            return "ERROR";
+            campos.put("RESULT","ERROR");
         }
+
+        return campos;
+    }
+
+    public void responder(View view) {
+        Intent replyIntent = new Intent(this, SenderActivity.class);
+        replyIntent.putExtra(RESPO_NFC, campos.get("RESULT"));
+        startActivity(replyIntent);
     }
 
 
