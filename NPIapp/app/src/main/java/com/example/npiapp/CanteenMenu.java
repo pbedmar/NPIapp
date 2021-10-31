@@ -24,6 +24,7 @@ public class CanteenMenu extends AppCompatActivity {
 
     private MenuViewModel mMenuViewModel;
     public static final String DATE = "npiapp.CanteenMenu.DATE";
+    public static final String INFO_NFC = "npiapp.CanteenMenu.INFO_NFC";
     private final int numberOfDatesToShow = 3;
     private String[] spinnerDates = new String[numberOfDatesToShow];
     private String todayDate;
@@ -118,7 +119,8 @@ public class CanteenMenu extends AppCompatActivity {
 
                 float total_price = 0;
                 for (int j = 0; j < numMeals; j++) {
-                    total_price += mealsPrices[j];
+                    if (mealsOrdered[j] == 1)
+                        total_price += mealsPrices[j];
                 }
 
                 RelativeLayout newCard = (RelativeLayout) getLayoutInflater().inflate(
@@ -142,8 +144,25 @@ public class CanteenMenu extends AppCompatActivity {
                     }
                 }
 
+                float finalTotal_price = total_price;
+                newCard.setOnClickListener(new View.OnClickListener() {
+                    public void onClick(View v) {
+                        String mealsNamesString = String.join("\n",mealsNames);
+                        String infoToNFC = "TUI;"+MainActivity.TUI+"PLATOS;"+mealsNamesString+
+                                "PRECIO;"+Float.toString(finalTotal_price);
+
+                        onClickCard(v, infoToNFC);
+                    }
+                });
+
                 linearLayout.addView(newCard);
             }
         }
+    }
+
+    protected void onClickCard(View v, String info) {
+        Intent intent = new Intent(this, SenderActivity.class);
+        intent.putExtra(INFO_NFC, info);
+        startActivity(intent);
     }
 }

@@ -3,6 +3,7 @@ package com.example.npiapp;
 import android.content.Intent;
 import android.nfc.NfcAdapter;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,6 +19,8 @@ public class SenderActivity extends AppCompatActivity implements OutcomingNfcMan
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sender);
 
+        Log.d("NFC", "activity launched");
+
         if (!isNfcSupported()) {
             Toast.makeText(this, "Nfc is not supported on this device", Toast.LENGTH_SHORT).show();
             finish();
@@ -27,7 +30,7 @@ public class SenderActivity extends AppCompatActivity implements OutcomingNfcMan
         }
 
         Intent intent = getIntent();
-        info = intent.getStringExtra(MainActivity.INFO_NFC);
+        info = intent.getStringExtra(CanteenMenu.INFO_NFC);
 
         // encapsulate sending logic in a separate class
         this.outcomingNfccallback = new OutcomingNfcManager(this);

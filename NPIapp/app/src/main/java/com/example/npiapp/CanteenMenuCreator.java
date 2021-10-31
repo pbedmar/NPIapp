@@ -103,7 +103,7 @@ public class CanteenMenuCreator extends AppCompatActivity implements SensorEvent
                     @NonNull BiometricPrompt.AuthenticationResult result) {
                 super.onAuthenticationSucceeded(result);
                 Toast.makeText(getApplicationContext(),
-                        "Authentication succeeded!", Toast.LENGTH_SHORT).show();
+                        "Autenticación completada!", Toast.LENGTH_SHORT).show();
 
                 mMenuViewModel.setOrderOnSpecificDate(date, boolToInt(orderedMeals[0]),
                         boolToInt(orderedMeals[1]), boolToInt(orderedMeals[2]), boolToInt(orderedMeals[3]),
@@ -119,17 +119,17 @@ public class CanteenMenuCreator extends AppCompatActivity implements SensorEvent
             @Override
             public void onAuthenticationFailed() {
                 super.onAuthenticationFailed();
-                Toast.makeText(getApplicationContext(), "Authentication failed",
+                Toast.makeText(getApplicationContext(), "Autenticación fallida",
                         Toast.LENGTH_SHORT)
                         .show();
             }
         });
 
         promptInfo = new BiometricPrompt.PromptInfo.Builder()
-                .setTitle("Biometric login for my app")
-                .setSubtitle("Log in using your biometric credential")
+                .setTitle("Autenticación para realizar la compra")
+                .setSubtitle("Verifica tu identidad mediante acceso biométrico")
                 .setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_STRONG)
-                .setNegativeButtonText("Use account password")
+                .setNegativeButtonText("Utilizar contraseña")
                 .build();
 
         // Prompt appears when user clicks "Log in".
