@@ -83,7 +83,7 @@ public class ReceiverActivity extends AppCompatActivity {
                 Toast.makeText(this, "Error al registrar pedido", Toast.LENGTH_LONG).show();
             }
 
-            Intent replyIntent = new Intent(this, MainActivity.class);
+            Intent replyIntent = new Intent(this, CanteenMenu.class);
             replyIntent.putExtra(RESPO_NFC, inMessage);
             startActivity(replyIntent);
         }

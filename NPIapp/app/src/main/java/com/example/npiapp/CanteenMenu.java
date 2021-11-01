@@ -1,9 +1,11 @@
 package com.example.npiapp;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -13,6 +15,7 @@ import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -30,11 +33,20 @@ public class CanteenMenu extends AppCompatActivity {
     private String todayDate;
     private final int numMeals = 6;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_canteen_menu);
+
+        Intent intent = getIntent();
+        String respuesta = intent.getStringExtra(ReceiverActivity.RESPO_NFC);
+        if(respuesta == null) {
+            respuesta = "";
+        }
+
+        if(respuesta.equals("OK")) {
+            //cartaPulsada.setBackgroundColor(Color.GREEN);
+        }
 
         mMenuViewModel = new ViewModelProvider(this).get(MenuViewModel.class);
 
@@ -42,12 +54,19 @@ public class CanteenMenu extends AppCompatActivity {
         loadSpinnerOptions();
         loadOrders();
 
+        Toast.makeText(this, "OnCreate", Toast.LENGTH_LONG).show();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         loadOrders();
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+
     }
 
     protected void generateDates() {
@@ -148,8 +167,8 @@ public class CanteenMenu extends AppCompatActivity {
                 newCard.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View v) {
                         String mealsNamesString = String.join("\n",mealsNames);
-                        String infoToNFC = "TUI;"+MainActivity.TUI+"PLATOS;"+mealsNamesString+
-                                "PRECIO;"+Float.toString(finalTotal_price);
+                        String infoToNFC = "TUI;"+MainActivity.TUI+";PLATOS;"+mealsNamesString+
+                                ";PRECIO;"+Float.toString(finalTotal_price);
 
                         onClickCard(v, infoToNFC);
                     }
