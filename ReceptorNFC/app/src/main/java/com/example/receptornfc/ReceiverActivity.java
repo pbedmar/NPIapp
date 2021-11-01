@@ -9,6 +9,7 @@ import android.nfc.NfcAdapter;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -100,6 +101,9 @@ public class ReceiverActivity extends AppCompatActivity {
                 replyIntent.putExtra(RESPO_NFC, campos.get("RESULT"));
                 startActivity(replyIntent);
             }
+
+            Button boton = findViewById(R.id.button_responder);
+            boton.setVisibility(View.VISIBLE);
         }
     }
 
