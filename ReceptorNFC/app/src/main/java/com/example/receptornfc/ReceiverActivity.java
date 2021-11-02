@@ -8,6 +8,7 @@ import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -23,6 +24,8 @@ public class ReceiverActivity extends AppCompatActivity {
 
     public static final String RESPO_NFC = "com.example.emisornfc.RESPONSE";
 
+    public static final String ID_NFC = "com.example.emisornfc.ID";
+
     public static final String MIME_TEXT_PLAIN = "text/plain";
 
     private Map<String,String> campos;
@@ -34,19 +37,17 @@ public class ReceiverActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_receiver);
 
-        if (!isNfcSupported()) {
+        this.nfcAdapter = NfcAdapter.getDefaultAdapter(this);
+        
+        if (nfcAdapter == null) {
             Toast.makeText(this, "Nfc is not supported on this device", Toast.LENGTH_SHORT).show();
             finish();
         }
-        if (!nfcAdapter.isEnabled()) {
-            Toast.makeText(this, "NFC disabled on this device. Turn on to proceed", Toast.LENGTH_SHORT).show();
+        else {
+            if (!nfcAdapter.isEnabled()) {
+                Toast.makeText(this, "NFC disabled on this device. Turn on to proceed", Toast.LENGTH_SHORT).show();
+            }
         }
-    }
-
-    // need to check NfcAdapter for nullability. Null means no NFC support on the device
-    private boolean isNfcSupported() {
-        this.nfcAdapter = NfcAdapter.getDefaultAdapter(this);
-        return this.nfcAdapter != null;
     }
 
     @Override
@@ -99,6 +100,7 @@ public class ReceiverActivity extends AppCompatActivity {
 
                 Intent replyIntent = new Intent(this, SenderActivity.class);
                 replyIntent.putExtra(RESPO_NFC, campos.get("RESULT"));
+                replyIntent.putExtra(ID_NFC, campos.get("FECHA"));
                 startActivity(replyIntent);
             }
 
@@ -110,14 +112,20 @@ public class ReceiverActivity extends AppCompatActivity {
     private Map<String,String> procesarMensaje(String inMessage) {
         String[] secciones = inMessage.split(";");
         Map<String,String> campos = new HashMap<>();
-        if(secciones.length == 6) {
-            if(secciones[0].equals("TUI")) {
-                campos.put("TUI",secciones[1]);
-                if(secciones[2].equals("PLATOS")) {
-                    campos.put("PLATOS",secciones[3]);
-                    if(secciones[4].equals("PRECIO")) {
-                        campos.put("PRECIO",secciones[5]);
-                        campos.put("RESULT","OK");
+        if(secciones.length == 8) {
+            if(secciones[0].equals("FECHA")) {
+                campos.put("FECHA", secciones[1]);
+                if(secciones[2].equals("TUI")) {
+                    campos.put("TUI",secciones[3]);
+                    if(secciones[4].equals("PLATOS")) {
+                        campos.put("PLATOS",secciones[5]);
+                        if(secciones[6].equals("PRECIO")) {
+                            campos.put("PRECIO",secciones[7]);
+                            campos.put("RESULT","OK");
+                        }
+                        else {
+                            campos.put("RESULT","ERROR");
+                        }
                     }
                     else {
                         campos.put("RESULT","ERROR");
@@ -141,6 +149,7 @@ public class ReceiverActivity extends AppCompatActivity {
     public void responder(View view) {
         Intent replyIntent = new Intent(this, SenderActivity.class);
         replyIntent.putExtra(RESPO_NFC, campos.get("RESULT"));
+        replyIntent.putExtra(ID_NFC, campos.get("FECHA"));
         startActivity(replyIntent);
     }
 

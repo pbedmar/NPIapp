@@ -9,7 +9,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class SenderActivity extends AppCompatActivity implements OutcomingNfcManager.NfcActivity {
 
-    private String info;
+    private String fecha;
+    private String result;
     private NfcAdapter nfcAdapter;
     private OutcomingNfcManager outcomingNfccallback;
 
@@ -18,21 +19,26 @@ public class SenderActivity extends AppCompatActivity implements OutcomingNfcMan
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sender);
 
-        if (!isNfcSupported()) {
+        this.nfcAdapter = NfcAdapter.getDefaultAdapter(this);
+
+        if (nfcAdapter == null) {
             Toast.makeText(this, "Nfc is not supported on this device", Toast.LENGTH_SHORT).show();
             finish();
         }
-        if (!nfcAdapter.isEnabled()) {
-            Toast.makeText(this, "NFC disabled on this device. Turn on to proceed", Toast.LENGTH_SHORT).show();
+        else {
+            if (!nfcAdapter.isEnabled()) {
+                Toast.makeText(this, "NFC disabled on this device. Turn on to proceed", Toast.LENGTH_SHORT).show();
+            }
+
+            Intent intent = getIntent();
+            result = intent.getStringExtra(ReceiverActivity.RESPO_NFC);
+            fecha = intent.getStringExtra(ReceiverActivity.ID_NFC);
+
+            // encapsulate sending logic in a separate class
+            this.outcomingNfccallback = new OutcomingNfcManager(this);
+            this.nfcAdapter.setOnNdefPushCompleteCallback(outcomingNfccallback, this);
+            this.nfcAdapter.setNdefPushMessageCallback(outcomingNfccallback, this);
         }
-
-        Intent intent = getIntent();
-        info = intent.getStringExtra(ReceiverActivity.RESPO_NFC);
-
-        // encapsulate sending logic in a separate class
-        this.outcomingNfccallback = new OutcomingNfcManager(this);
-        this.nfcAdapter.setOnNdefPushCompleteCallback(outcomingNfccallback, this);
-        this.nfcAdapter.setNdefPushMessageCallback(outcomingNfccallback, this);
     }
 
     @Override
@@ -41,14 +47,9 @@ public class SenderActivity extends AppCompatActivity implements OutcomingNfcMan
         setIntent(intent);
     }
 
-    private boolean isNfcSupported() {
-        this.nfcAdapter = NfcAdapter.getDefaultAdapter(this);
-        return this.nfcAdapter != null;
-    }
-
     @Override
     public String getOutcomingMessage() {
-        return info;
+        return fecha + ";" + result;
     }
 
     @Override

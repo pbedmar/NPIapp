@@ -17,6 +17,9 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
+
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -39,16 +42,6 @@ public class CanteenMenu extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_canteen_menu);
 
-        Intent intent = getIntent();
-        String respuesta = intent.getStringExtra(ReceiverActivity.RESPO_NFC);
-        if(respuesta == null) {
-            respuesta = "";
-        }
-
-        if(respuesta.equals("OK")) {
-            //cartaPulsada.setBackgroundColor(Color.GREEN);
-        }
-
         mMenuViewModel = new ViewModelProvider(this).get(MenuViewModel.class);
 
         generateDates();
@@ -56,7 +49,6 @@ public class CanteenMenu extends AppCompatActivity {
         loadOrders();
 
         Log.d("CanteenMenu", "OnCreate");
-        Toast.makeText(this, "OnCreate", Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -133,7 +125,7 @@ public class CanteenMenu extends AppCompatActivity {
         for (int i = 0; i < numberOfDatesToShow + 1; i++) {
             Menu menu = mMenuViewModel.getMenuOnSpecificDate(dates[i]);
 
-            if (menu.getDay_with_order() == 1) {
+            if (menu.getDay_with_order() >= 1) {
                 String[] mealsNames = menu.getMealsNamesArray();
                 float[] mealsPrices = menu.getMealsPricesArray();
                 int[] mealsOrdered = menu.getMealsOrderedArray();
@@ -177,6 +169,13 @@ public class CanteenMenu extends AppCompatActivity {
                     }
                 });
 
+                if (menu.getDay_with_order() == 2) {
+                    newCard.setBackgroundColor(Color.GREEN);
+                }
+                else {
+                    newCard.setBackgroundColor(Color.YELLOW);
+                }
+
                 linearLayout.addView(newCard);
             }
         }
@@ -186,5 +185,22 @@ public class CanteenMenu extends AppCompatActivity {
         Intent intent = new Intent(this, SenderActivity.class);
         intent.putExtra(INFO_NFC, info);
         startActivity(intent);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+        if(result != null) {
+            String fecha = data.getStringExtra(ReceiverActivity.RESPO_NFC);
+            if(requestCode == RESULT_OK) {
+                mMenuViewModel.setOrderedOnSpecificDate(fecha, 2);
+            }
+            else if(requestCode == RESULT_CANCELED) {
+                mMenuViewModel.setOrderedOnSpecificDate(fecha, 1);
+            }
+        }
+        else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
     }
 }

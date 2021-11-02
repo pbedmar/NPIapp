@@ -26,19 +26,17 @@ public class ReceiverActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_receiver);
 
-        if (!isNfcSupported()) {
+        this.nfcAdapter = NfcAdapter.getDefaultAdapter(this);
+
+        if (nfcAdapter == null) {
             Toast.makeText(this, "Nfc is not supported on this device", Toast.LENGTH_SHORT).show();
             finish();
         }
-        if (!nfcAdapter.isEnabled()) {
-            Toast.makeText(this, "NFC disabled on this device. Turn on to proceed", Toast.LENGTH_SHORT).show();
+        else {
+            if (!nfcAdapter.isEnabled()) {
+                Toast.makeText(this, "NFC disabled on this device. Turn on to proceed", Toast.LENGTH_SHORT).show();
+            }
         }
-    }
-
-    // need to check NfcAdapter for nullability. Null means no NFC support on the device
-    private boolean isNfcSupported() {
-        this.nfcAdapter = NfcAdapter.getDefaultAdapter(this);
-        return this.nfcAdapter != null;
     }
 
     @Override
@@ -83,9 +81,16 @@ public class ReceiverActivity extends AppCompatActivity {
                 Toast.makeText(this, "Error al registrar pedido", Toast.LENGTH_LONG).show();
             }
 
+            String[] campos = inMessage.split(";");
             Intent replyIntent = new Intent(this, CanteenMenu.class);
-            replyIntent.putExtra(RESPO_NFC, inMessage);
-            startActivity(replyIntent);
+            replyIntent.putExtra(RESPO_NFC, campos[0]);
+            if(campos[1].equals("OK")) {
+                setResult(RESULT_OK, replyIntent);
+            }
+            else if(campos[1].equals("ERROR")) {
+                setResult(RESULT_CANCELED, replyIntent);
+            }
+            finish();
         }
     }
 

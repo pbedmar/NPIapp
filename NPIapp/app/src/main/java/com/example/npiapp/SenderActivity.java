@@ -21,32 +21,31 @@ public class SenderActivity extends AppCompatActivity implements OutcomingNfcMan
 
         Log.d("NFC", "activity launched");
 
-        if (!isNfcSupported()) {
+        this.nfcAdapter = NfcAdapter.getDefaultAdapter(this);
+
+        if (nfcAdapter == null) {
             Toast.makeText(this, "Nfc is not supported on this device", Toast.LENGTH_SHORT).show();
             finish();
         }
-        if (!nfcAdapter.isEnabled()) {
-            Toast.makeText(this, "NFC disabled on this device. Turn on to proceed", Toast.LENGTH_SHORT).show();
+        else {
+            if (!nfcAdapter.isEnabled()) {
+                Toast.makeText(this, "NFC disabled on this device. Turn on to proceed", Toast.LENGTH_SHORT).show();
+            }
+
+            Intent intent = getIntent();
+            info = intent.getStringExtra(CanteenMenu.INFO_NFC);
+
+            // encapsulate sending logic in a separate class
+            this.outcomingNfccallback = new OutcomingNfcManager(this);
+            this.nfcAdapter.setOnNdefPushCompleteCallback(outcomingNfccallback, this);
+            this.nfcAdapter.setNdefPushMessageCallback(outcomingNfccallback, this);
         }
-
-        Intent intent = getIntent();
-        info = intent.getStringExtra(CanteenMenu.INFO_NFC);
-
-        // encapsulate sending logic in a separate class
-        this.outcomingNfccallback = new OutcomingNfcManager(this);
-        this.nfcAdapter.setOnNdefPushCompleteCallback(outcomingNfccallback, this);
-        this.nfcAdapter.setNdefPushMessageCallback(outcomingNfccallback, this);
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         setIntent(intent);
-    }
-
-    private boolean isNfcSupported() {
-        this.nfcAdapter = NfcAdapter.getDefaultAdapter(this);
-        return this.nfcAdapter != null;
     }
 
     @Override
