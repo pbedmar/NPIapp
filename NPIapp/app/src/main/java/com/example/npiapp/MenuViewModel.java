@@ -31,5 +31,9 @@ public class MenuViewModel extends AndroidViewModel {
                 ordered_main2, ordered_dessert1, ordered_dessert2, day_with_order);
     }
 
+    void setOrderedOnSpecificDate(String date_, int day_with_order){
+        mMenuDao.setOrderedOnSpecificDate(date_, day_with_order);
+    }
+
     //public void insert(Word word) { mRepository.insert(word); }
 }

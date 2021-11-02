@@ -17,4 +17,7 @@ public interface MenuDao {
             " ordered_dessert2 = :ordered_dessert2, day_with_order = :day_with_order WHERE date == :date_")
     void setOrderOnSpecificDate(String date_, int ordered_first1, int ordered_first2, int ordered_main1,
                                 int ordered_main2, int ordered_dessert1, int ordered_dessert2, int day_with_order);
+
+    @Query("UPDATE menu SET day_with_order = :day_with_order WHERE date == :date_")
+    void setOrderedOnSpecificDate(String date_, int day_with_order);
 }

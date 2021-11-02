@@ -25,13 +25,14 @@ import java.util.List;
 
 public class CanteenMenu extends AppCompatActivity {
 
-    private MenuViewModel mMenuViewModel;
     public static final String DATE = "npiapp.CanteenMenu.DATE";
     public static final String INFO_NFC = "npiapp.CanteenMenu.INFO_NFC";
     private final int numberOfDatesToShow = 3;
     private String[] spinnerDates = new String[numberOfDatesToShow];
     private String todayDate;
     private final int numMeals = 6;
+
+    protected static MenuViewModel mMenuViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +55,7 @@ public class CanteenMenu extends AppCompatActivity {
         loadSpinnerOptions();
         loadOrders();
 
+        Log.d("CanteenMenu", "OnCreate");
         Toast.makeText(this, "OnCreate", Toast.LENGTH_LONG).show();
     }
 
@@ -163,11 +165,12 @@ public class CanteenMenu extends AppCompatActivity {
                     }
                 }
 
+                String date_ = dates[i];
                 float finalTotal_price = total_price;
                 newCard.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View v) {
                         String mealsNamesString = String.join("\n",mealsNames);
-                        String infoToNFC = "TUI;"+MainActivity.TUI+";PLATOS;"+mealsNamesString+
+                        String infoToNFC = "FECHA;"+date_+";TUI;"+MainActivity.TUI+";PLATOS;"+mealsNamesString+
                                 ";PRECIO;"+Float.toString(finalTotal_price);
 
                         onClickCard(v, infoToNFC);
