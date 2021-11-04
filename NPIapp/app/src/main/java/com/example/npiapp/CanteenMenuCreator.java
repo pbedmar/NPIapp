@@ -49,8 +49,8 @@ public class CanteenMenuCreator extends AppCompatActivity implements SensorEvent
     private Sensor sensorAccelerometer;
     private long lastUpdate = 0;
     private long lastDetected = 0;
-    private float umbralAceptar = 0.2f;
-    private float umbralRechazar = 0.2f;
+    private float umbralAceptar = 2.0f;
+    private float umbralRechazar = 2.0f;
 
     public static final int AUTENTICATION_REQUEST = 1;
 
@@ -112,7 +112,6 @@ public class CanteenMenuCreator extends AppCompatActivity implements SensorEvent
                         boolToInt(orderedMeals[4]), boolToInt(orderedMeals[5]), 1);
 
                 MainActivity.saldo = MainActivity.saldo - totalOrderPrice;
-                MainActivity.saldo = round(MainActivity.saldo*100.0f)/100.0f;
 
                 Intent replyIntent = new Intent();
                 setResult(RESULT_OK, replyIntent);
@@ -251,11 +250,10 @@ public class CanteenMenuCreator extends AppCompatActivity implements SensorEvent
                 Log.d("pedro", "plato añadido a la cuenta");
             }
         }
-        totalOrderPrice = round(totalOrderPrice*100.0f)/100.0f;
 
         TextView totalPrice = (TextView) findViewById(R.id.total_price_text);
         int parteEntera = (int)totalOrderPrice;
-        int parteDecimal = (int)((totalOrderPrice - parteEntera)*100);
+        int parteDecimal = (int)(round((totalOrderPrice - parteEntera)*100));
         totalPrice.setText(Integer.toString(parteEntera) + "." + Integer.toString(parteDecimal));
     }
 
@@ -278,14 +276,14 @@ public class CanteenMenuCreator extends AppCompatActivity implements SensorEvent
                         Log.i("Info_acce_X", Float.toString(x));
                         Log.i("Info_acce_Z", Float.toString(z));
 
-                        if(x < -5.0f && abs(z) < umbralRechazar) {
+                        if(x > 4.0f && abs(z) < umbralRechazar) {
                             Log.d("pedro", "X Left axis: " + x);
                             Log.d("pedro", "Left shake detected");
                             orderedMeals[currentCard] = false;
                             lastDetected = System.currentTimeMillis();
                             nextCard("translationX");
                         }
-                        else if(z > 5.0f && abs(x) < umbralAceptar) {
+                        else if(z > 4.0f && abs(x) < umbralAceptar) {
                             Log.d("pedro", "X Right axis: " + x);
                             Log.d("pedro", "Right shake detected");
                             orderedMeals[currentCard] = true;
