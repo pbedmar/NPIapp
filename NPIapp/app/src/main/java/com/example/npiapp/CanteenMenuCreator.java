@@ -110,6 +110,7 @@ public class CanteenMenuCreator extends AppCompatActivity implements SensorEvent
                         boolToInt(orderedMeals[4]), boolToInt(orderedMeals[5]), 1);
 
                 MainActivity.saldo = MainActivity.saldo - totalOrderPrice;
+                MainActivity.saldo = round(MainActivity.saldo*100.0f)/100.0f;
 
                 Intent replyIntent = new Intent();
                 setResult(RESULT_OK, replyIntent);
@@ -251,7 +252,9 @@ public class CanteenMenuCreator extends AppCompatActivity implements SensorEvent
         totalOrderPrice = round(totalOrderPrice*100.0f)/100.0f;
 
         TextView totalPrice = (TextView) findViewById(R.id.total_price_text);
-        totalPrice.setText(Float.toString(totalOrderPrice));
+        int parteEntera = (int)totalOrderPrice;
+        int parteDecimal = (int)((totalOrderPrice - parteEntera)*100);
+        totalPrice.setText(Integer.toString(parteEntera) + "." + Integer.toString(parteDecimal));
     }
 
 

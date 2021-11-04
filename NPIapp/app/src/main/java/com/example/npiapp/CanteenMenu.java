@@ -143,7 +143,9 @@ public class CanteenMenu extends AppCompatActivity {
                 date.setText(dates[i]);
 
                 TextView totalPrice = newCard.findViewById(R.id.price_ordered_menu_text);
-                totalPrice.setText(Float.toString(total_price));
+                int parteEntera = (int)total_price;
+                int parteDecimal = (int)((total_price - parteEntera)*100);
+                totalPrice.setText(Integer.toString(parteEntera) + "." + Integer.toString(parteDecimal));
 
                 LinearLayout layoutOrderedMeals = (LinearLayout) newCard.findViewById(R.id.meals_layout);
 

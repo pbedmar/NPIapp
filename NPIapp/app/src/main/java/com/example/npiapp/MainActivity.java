@@ -18,17 +18,15 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        TextView textView = findViewById(R.id.saldo_value_text);
-        saldo = round(saldo*100.0f)/100.0f;
-        textView.setText(Float.toString(saldo));
     }
 
     @Override
     protected void onStart() {
         super.onStart();
         TextView textView = findViewById(R.id.saldo_value_text);
-        saldo = round(saldo*100.0f)/100.0f;
-        textView.setText(Float.toString(saldo));
+        int parteEntera = (int)saldo;
+        int parteDecimal = (int)((saldo - parteEntera)*100);
+        textView.setText(Integer.toString(parteEntera) + "." + Integer.toString(parteDecimal));
     }
 
     public void launchGuidance(View view) {
