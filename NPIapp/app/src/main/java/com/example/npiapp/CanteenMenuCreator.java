@@ -49,6 +49,8 @@ public class CanteenMenuCreator extends AppCompatActivity implements SensorEvent
     private Sensor sensorAccelerometer;
     private long lastUpdate = 0;
     private long lastDetected = 0;
+    private float umbralAceptar = 0.2f;
+    private float umbralRechazar = 0.2f;
 
     public static final int AUTENTICATION_REQUEST = 1;
 
@@ -276,22 +278,19 @@ public class CanteenMenuCreator extends AppCompatActivity implements SensorEvent
                         Log.i("Info_acce_X", Float.toString(x));
                         Log.i("Info_acce_Z", Float.toString(z));
 
-                        if (abs(x) > abs(z)) {
-                            if (x < -5) {
-                                Log.d("pedro", "X Left axis: " + x);
-                                Log.d("pedro", "Left shake detected");
-                                orderedMeals[currentCard] = false;
-                                lastDetected = System.currentTimeMillis();
-                                nextCard("translationX");
-                            }
-                        } else {
-                            if (z > 5) {
-                                Log.d("pedro", "X Right axis: " + x);
-                                Log.d("pedro", "Right shake detected");
-                                orderedMeals[currentCard] = true;
-                                lastDetected = System.currentTimeMillis();
-                                nextCard("translationY");
-                            }
+                        if(x < -5.0f && abs(z) < umbralRechazar) {
+                            Log.d("pedro", "X Left axis: " + x);
+                            Log.d("pedro", "Left shake detected");
+                            orderedMeals[currentCard] = false;
+                            lastDetected = System.currentTimeMillis();
+                            nextCard("translationX");
+                        }
+                        else if(z > 5.0f && abs(x) < umbralAceptar) {
+                            Log.d("pedro", "X Right axis: " + x);
+                            Log.d("pedro", "Right shake detected");
+                            orderedMeals[currentCard] = true;
+                            lastDetected = System.currentTimeMillis();
+                            nextCard("translationY");
                         }
                     }
                 }
