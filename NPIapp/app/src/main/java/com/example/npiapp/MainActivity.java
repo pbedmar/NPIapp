@@ -25,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
         super.onStart();
         TextView textView = findViewById(R.id.saldo_value_text);
         int parteEntera = (int)saldo;
-        int parteDecimal = (int)((saldo - parteEntera)*100);
+        int parteDecimal = (int)(round((saldo - parteEntera)*100));
         textView.setText(Integer.toString(parteEntera) + "." + Integer.toString(parteDecimal));
     }
 
