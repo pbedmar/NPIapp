@@ -14,6 +14,8 @@ public class SenderActivity extends AppCompatActivity implements OutcomingNfcMan
     private NfcAdapter nfcAdapter;
     private OutcomingNfcManager outcomingNfccallback;
 
+    public static final String ENVIO_NFC = "com.example.emisornfc.ENVIO_NFC";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,5 +62,10 @@ public class SenderActivity extends AppCompatActivity implements OutcomingNfcMan
         // cause onNdefPushComplete is called from the Binder thread
         runOnUiThread(() ->
                 Toast.makeText(SenderActivity.this, "Beaming complete", Toast.LENGTH_SHORT).show());
+
+        Intent replyIntent = new Intent(this, CanteenMenu.class);
+        replyIntent.putExtra(ENVIO_NFC, true);
+        setResult(RESULT_OK, replyIntent);
+        finish();
     }
 }
