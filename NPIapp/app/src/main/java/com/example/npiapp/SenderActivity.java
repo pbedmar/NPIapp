@@ -63,8 +63,7 @@ public class SenderActivity extends AppCompatActivity implements OutcomingNfcMan
         runOnUiThread(() ->
                 Toast.makeText(SenderActivity.this, "Beaming complete", Toast.LENGTH_SHORT).show());
 
-        Intent replyIntent = new Intent(this, CanteenMenu.class);
-        replyIntent.putExtra(ENVIO_NFC, true);
+        Intent replyIntent = new Intent(SenderActivity.this, CanteenMenu.class);
         setResult(RESULT_OK, replyIntent);
         finish();
     }

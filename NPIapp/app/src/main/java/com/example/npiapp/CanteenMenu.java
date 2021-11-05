@@ -186,13 +186,19 @@ public class CanteenMenu extends AppCompatActivity {
     protected void onClickCard(View v, String info) {
         Intent intent = new Intent(this, SenderActivity.class);
         intent.putExtra(INFO_NFC, info);
-        startActivityForResult(intent, RESULT_OK);
+        startActivityForResult(intent, 1);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
-        if(result != null) {
+        if(requestCode == 1) {
+            Boolean estadoEnvio = data.getBooleanExtra(SenderActivity.ENVIO_NFC, false);
+            if(estadoEnvio == true) {
+                Intent intent = new Intent(this, ReceiverActivity.class);
+                startActivityForResult(intent, 2);
+            }
+        }
+        else if(requestCode == 2) {
             String fecha = data.getStringExtra(ReceiverActivity.RESPO_NFC);
             if(fecha != null) {
                 if(requestCode == RESULT_OK) {
@@ -202,16 +208,8 @@ public class CanteenMenu extends AppCompatActivity {
                     mMenuViewModel.setOrderedOnSpecificDate(fecha, 1);
                 }
             }
-            else {
-                Boolean estadoEnvio = data.getBooleanExtra(SenderActivity.ENVIO_NFC, false);
-                if(estadoEnvio == true) {
-                    Intent intent = new Intent(this, ReceiverActivity.class);
-                    startActivityForResult(intent, RESULT_OK);
-                }
-            }
         }
-        else {
-            super.onActivityResult(requestCode, resultCode, data);
-        }
+
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }
