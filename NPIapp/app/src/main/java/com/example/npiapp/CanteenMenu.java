@@ -191,9 +191,10 @@ public class CanteenMenu extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
         if(requestCode == 1) {
-            Boolean estadoEnvio = data.getBooleanExtra(SenderActivity.ENVIO_NFC, false);
-            if(estadoEnvio == true) {
+            if(resultCode == RESULT_OK) {
                 Intent intent = new Intent(this, ReceiverActivity.class);
                 startActivityForResult(intent, 2);
             }
@@ -201,15 +202,13 @@ public class CanteenMenu extends AppCompatActivity {
         else if(requestCode == 2) {
             String fecha = data.getStringExtra(ReceiverActivity.RESPO_NFC);
             if(fecha != null) {
-                if(requestCode == RESULT_OK) {
+                if(resultCode == RESULT_OK) {
                     mMenuViewModel.setOrderedOnSpecificDate(fecha, 2);
                 }
-                else if(requestCode == RESULT_CANCELED) {
+                else if(resultCode == RESULT_CANCELED) {
                     mMenuViewModel.setOrderedOnSpecificDate(fecha, 1);
                 }
             }
         }
-
-        super.onActivityResult(requestCode, resultCode, data);
     }
 }
