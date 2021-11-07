@@ -107,8 +107,16 @@ public class CanteenMenu extends AppCompatActivity {
         Intent intent = new Intent(this, CanteenMenuCreator.class);
 
         Spinner spinner = (Spinner) findViewById(R.id.date_spinner);
-        intent.putExtra(DATE, spinner.getSelectedItem().toString());
-        startActivity(intent);
+        String fecha = spinner.getSelectedItem().toString();
+
+        Menu menu = mMenuViewModel.getMenuOnSpecificDate(fecha);
+        if(menu.getDay_with_order() >= 1){
+            Toast.makeText(this, "Ya hay un pedido realizado en esa fecha", Toast.LENGTH_LONG).show();
+        }
+        else {
+            intent.putExtra(DATE, fecha);
+            startActivity(intent);
+        }
     }
 
     protected void loadOrders() {
@@ -184,9 +192,16 @@ public class CanteenMenu extends AppCompatActivity {
     }
 
     protected void onClickCard(View v, String info) {
-        Intent intent = new Intent(this, SenderActivity.class);
-        intent.putExtra(INFO_NFC, info);
-        startActivityForResult(intent, 1);
+        String[] campos = info.split(";");
+        Menu menu = mMenuViewModel.getMenuOnSpecificDate(campos[1]);
+        if(menu.getDay_with_order() != 2){
+            Intent intent = new Intent(this, SenderActivity.class);
+            intent.putExtra(INFO_NFC, info);
+            startActivityForResult(intent, 1);
+        }
+        else {
+            Toast.makeText(this, "Pedido ya registrado", Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override
