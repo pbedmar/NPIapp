@@ -45,12 +45,6 @@ public class SenderActivity extends AppCompatActivity implements OutcomingNfcMan
     }
 
     @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        setIntent(intent);
-    }
-
-    @Override
     public String getOutcomingMessage() {
         return info;
     }
