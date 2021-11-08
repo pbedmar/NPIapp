@@ -114,6 +114,13 @@ public class Guidance extends AppCompatActivity {
         ArrayList<Integer> ruta1 = new ArrayList<Integer>();
         ruta1.add(0);
         ruta1.add(1);
+        ruta1.add(2);
+        ruta1.add(3);
+        ruta1.add(4);
+        ruta1.add(5);
+        ruta1.add(6);
+        ruta1.add(7);
+        ruta1.add(8);
         Map<String, ArrayList<Integer>> finRuta1 = new HashMap<String, ArrayList<Integer>>();
         finRuta1.put("Despacho Marcelino", ruta1);
         rutas.put("Entrada ETSIIT", finRuta1);
