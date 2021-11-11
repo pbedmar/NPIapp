@@ -276,14 +276,14 @@ public class CanteenMenuCreator extends AppCompatActivity implements SensorEvent
                         Log.i("Info_acce_X", Float.toString(x));
                         Log.i("Info_acce_Z", Float.toString(z));
 
-                        if(x > 4.0f && abs(z) < umbralRechazar) {
+                        if(x > 2.5f && abs(z) < umbralRechazar) {
                             Log.d("pedro", "X Left axis: " + x);
                             Log.d("pedro", "Left shake detected");
                             orderedMeals[currentCard] = false;
                             lastDetected = System.currentTimeMillis();
                             nextCard("translationX");
                         }
-                        else if(z > 4.0f && abs(x) < umbralAceptar) {
+                        else if(z > 3.0f && abs(x) < umbralAceptar) {
                             Log.d("pedro", "X Right axis: " + x);
                             Log.d("pedro", "Right shake detected");
                             orderedMeals[currentCard] = true;
