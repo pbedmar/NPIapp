@@ -33,18 +33,19 @@ public class SenderActivity extends AppCompatActivity implements OutcomingNfcMan
             Intent intent = getIntent();
             result = intent.getStringExtra(ReceiverActivity.RESPO_NFC);
             fecha = intent.getStringExtra(ReceiverActivity.ID_NFC);
+        }
+    }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        if(nfcAdapter != null) {
             // encapsulate sending logic in a separate class
             this.outcomingNfccallback = new OutcomingNfcManager(this);
             this.nfcAdapter.setOnNdefPushCompleteCallback(outcomingNfccallback, this);
             this.nfcAdapter.setNdefPushMessageCallback(outcomingNfccallback, this);
         }
-    }
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        setIntent(intent);
     }
 
     @Override
@@ -59,5 +60,8 @@ public class SenderActivity extends AppCompatActivity implements OutcomingNfcMan
         // cause onNdefPushComplete is called from the Binder thread
         runOnUiThread(() ->
                 Toast.makeText(SenderActivity.this, "Beaming complete", Toast.LENGTH_SHORT).show());
+
+        Intent reinicioIntent = new Intent(this, ReceiverActivity.class);
+        startActivity(reinicioIntent);
     }
 }

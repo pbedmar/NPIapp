@@ -107,8 +107,16 @@ public class CanteenMenu extends AppCompatActivity {
         Intent intent = new Intent(this, CanteenMenuCreator.class);
 
         Spinner spinner = (Spinner) findViewById(R.id.date_spinner);
-        intent.putExtra(DATE, spinner.getSelectedItem().toString());
-        startActivity(intent);
+        String fecha = spinner.getSelectedItem().toString();
+
+        Menu menu = mMenuViewModel.getMenuOnSpecificDate(fecha);
+        if(menu.getDay_with_order() >= 1){
+            Toast.makeText(this, "Ya hay un pedido realizado en esa fecha", Toast.LENGTH_LONG).show();
+        }
+        else {
+            intent.putExtra(DATE, fecha);
+            startActivity(intent);
+        }
     }
 
     protected void loadOrders() {
@@ -184,25 +192,38 @@ public class CanteenMenu extends AppCompatActivity {
     }
 
     protected void onClickCard(View v, String info) {
-        Intent intent = new Intent(this, SenderActivity.class);
-        intent.putExtra(INFO_NFC, info);
-        startActivity(intent);
+        String[] campos = info.split(";");
+        Menu menu = mMenuViewModel.getMenuOnSpecificDate(campos[1]);
+        if(menu.getDay_with_order() != 2){
+            Intent intent = new Intent(this, SenderActivity.class);
+            intent.putExtra(INFO_NFC, info);
+            startActivityForResult(intent, 1);
+        }
+        else {
+            Toast.makeText(this, "Pedido ya registrado", Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
-        if(result != null) {
-            String fecha = data.getStringExtra(ReceiverActivity.RESPO_NFC);
-            if(requestCode == RESULT_OK) {
-                mMenuViewModel.setOrderedOnSpecificDate(fecha, 2);
-            }
-            else if(requestCode == RESULT_CANCELED) {
-                mMenuViewModel.setOrderedOnSpecificDate(fecha, 1);
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(requestCode == 1) {
+            if(resultCode == RESULT_OK) {
+                Intent intent = new Intent(this, ReceiverActivity.class);
+                startActivityForResult(intent, 2);
             }
         }
-        else {
-            super.onActivityResult(requestCode, resultCode, data);
+        else if(requestCode == 2) {
+            String fecha = data.getStringExtra(ReceiverActivity.RESPO_NFC);
+            if(fecha != null) {
+                if(resultCode == RESULT_OK) {
+                    mMenuViewModel.setOrderedOnSpecificDate(fecha, 2);
+                }
+                else if(resultCode == RESULT_CANCELED) {
+                    mMenuViewModel.setOrderedOnSpecificDate(fecha, 1);
+                }
+            }
         }
     }
 }
