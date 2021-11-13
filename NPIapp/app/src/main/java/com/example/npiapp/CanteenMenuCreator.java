@@ -283,7 +283,7 @@ public class CanteenMenuCreator extends AppCompatActivity implements SensorEvent
                             lastDetected = System.currentTimeMillis();
                             nextCard("translationX");
                         }
-                        else if(z > 4.0f && abs(x) < umbralAceptar) {
+                        else if(z > 3.5f && abs(x) < umbralAceptar) {
                             Log.d("pedro", "X Right axis: " + x);
                             Log.d("pedro", "Right shake detected");
                             orderedMeals[currentCard] = true;
