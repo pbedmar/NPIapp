@@ -260,6 +260,8 @@ public class PanoramaView extends View {
         widthImagen = mapaImagen.getWidth();
         heightImagen = mapaImagen.getHeight();
 
+        Log.i("INFO", new String("widthImg: " + widthImagen + " heightImg: " + heightImagen));
+
         heightScreen = heightImagen;
         widthScreen = (int) (heightScreen * proporcion);
 
@@ -476,63 +478,82 @@ public class PanoramaView extends View {
         Escena escena2 = new Escena(R.drawable.imagen1, "Despacho Marcelino", 0.8f, 2000, listaHotspotsJ2, listaHotspotsI2);
         */
 
+        String title;
+        String descrip;
 
         /*  Escenas  */
         Map<Integer, HotspotJump> listaHotspotsJ1 = new HashMap<>();
+        HotspotJump h1_1 = new HotspotJump(3380, 2000, 100, 1, R.drawable.pin);
+        listaHotspotsJ1.put(1, h1_1);
         ArrayList<HotspotInfo> listaHotspotsI1 = new ArrayList<>();
-        HotspotJump h1 = new HotspotJump(3380, 2000, 100, 1, R.drawable.pin);
-        listaHotspotsJ1.put(1, h1);
+        title = "Servicios UGR";
+        descrip = "Al entrar a mano al fondo de la sala encontrarás la Secretaría, donde puedes" +
+                  " realizar trámites administrativos. Además al entrar a mano derecha encontrarás" +
+                  " una escaleras que se llevarán a la biblioteca (primera planta), y a los despachos" +
+                  " de los profesores (segunda planta).";
+        HotspotInfo h1_2 = new HotspotInfo(2206, 1900, 100, title, descrip, R.drawable.info);
+        listaHotspotsI1.add(h1_2);
         Escena escena1 = new Escena(R.drawable.imagen1, "Entrada ETSIIT", 0.8f, 2800, listaHotspotsJ1, listaHotspotsI1);
         /* ----------------------------- */
         Map<Integer, HotspotJump> listaHotspotsJ2 = new HashMap<>();
+        HotspotJump h2_1 = new HotspotJump(4150, 1900, 100, 2, R.drawable.pin);
+        listaHotspotsJ2.put(2, h2_1);
         ArrayList<HotspotInfo> listaHotspotsI2 = new ArrayList<>();
-        HotspotJump h2 = new HotspotJump(4150, 1900, 100, 2, R.drawable.pin);
-        listaHotspotsJ2.put(2, h2);
-        Escena escena2 = new Escena(R.drawable.imagen2, "Entrada ETSIIT", 0.8f, 3750, listaHotspotsJ2, listaHotspotsI2);
+        title = "Zona de descanso";
+        descrip = "En esta zona encontrarás bancos donde descansar o realizar tareas. Esta zona dispone" +
+                  " de enchufes, una máquina expendedora, y de un futbolín.";
+        HotspotInfo h2_2 = new HotspotInfo(1656, 2050, 100, title, descrip, R.drawable.info);
+        listaHotspotsI2.add(h2_2);
+        title = "Servicios UGR";
+        descrip = "Al bajar las escaleras a mano derecha puedes encontrar servicios de la universidad" +
+                  " como la copistería, el comedor, o la cafetería.";
+        HotspotInfo h2_3 = new HotspotInfo(2986, 2150, 100, title, descrip, R.drawable.info);
+        listaHotspotsI2.add(h2_3);
+        Escena escena2 = new Escena(R.drawable.imagen2, "Zona Descanso", 0.8f, 3750, listaHotspotsJ2, listaHotspotsI2);
         /* ----------------------------- */
         Map<Integer, HotspotJump> listaHotspotsJ3 = new HashMap<>();
+        HotspotJump h3_1 = new HotspotJump(2170, 2000, 100, 3, R.drawable.pin);
+        listaHotspotsJ3.put(3, h3_1);
         ArrayList<HotspotInfo> listaHotspotsI3 = new ArrayList<>();
-        HotspotJump h3 = new HotspotJump(2170, 2000, 100, 3, R.drawable.pin);
-        listaHotspotsJ3.put(3, h3);
-        Escena escena3 = new Escena(R.drawable.imagen3, "Entrada ETSIIT", 0.8f, 1700, listaHotspotsJ3, listaHotspotsI3);
+        Escena escena3 = new Escena(R.drawable.imagen3, "Pasillo central", 0.8f, 1700, listaHotspotsJ3, listaHotspotsI3);
         /* ----------------------------- */
         Map<Integer, HotspotJump> listaHotspotsJ4 = new HashMap<>();
-        ArrayList<HotspotInfo> listaHotspotsI4 = new ArrayList<>();
         HotspotJump h4 = new HotspotJump(4150, 2000, 100, 4, R.drawable.pin);
         listaHotspotsJ4.put(4, h4);
-        Escena escena4 = new Escena(R.drawable.imagen4, "Entrada ETSIIT", 0.8f, 3400, listaHotspotsJ4, listaHotspotsI4);
+        ArrayList<HotspotInfo> listaHotspotsI4 = new ArrayList<>();
+        Escena escena4 = new Escena(R.drawable.imagen4, "Entrada Edf. Aulas", 0.8f, 3400, listaHotspotsJ4, listaHotspotsI4);
         /* ----------------------------- */
         Map<Integer, HotspotJump> listaHotspotsJ5 = new HashMap<>();
-        ArrayList<HotspotInfo> listaHotspotsI5 = new ArrayList<>();
         HotspotJump h5 = new HotspotJump(2100, 2000, 100, 5, R.drawable.pin);
         listaHotspotsJ5.put(5, h5);
-        Escena escena5 = new Escena(R.drawable.imagen5, "Entrada ETSIIT", 0.8f, 7000, listaHotspotsJ5, listaHotspotsI5);
+        ArrayList<HotspotInfo> listaHotspotsI5 = new ArrayList<>();
+        Escena escena5 = new Escena(R.drawable.imagen5, "Planta Cero", 0.8f, 7000, listaHotspotsJ5, listaHotspotsI5);
         /* ----------------------------- */
         Map<Integer, HotspotJump> listaHotspotsJ6 = new HashMap<>();
-        ArrayList<HotspotInfo> listaHotspotsI6 = new ArrayList<>();
         HotspotJump h6 = new HotspotJump(4300, 1900, 100, 6, R.drawable.pin);
         listaHotspotsJ6.put(6, h6);
-        Escena escena6 = new Escena(R.drawable.imagen6, "Entrada ETSIIT", 0.8f, 2850, listaHotspotsJ6, listaHotspotsI6);
+        ArrayList<HotspotInfo> listaHotspotsI6 = new ArrayList<>();
+        Escena escena6 = new Escena(R.drawable.imagen6, "Inicio Escaleras", 0.8f, 2850, listaHotspotsJ6, listaHotspotsI6);
         /* ----------------------------- */
         Map<Integer, HotspotJump> listaHotspotsJ7 = new HashMap<>();
-        ArrayList<HotspotInfo> listaHotspotsI7 = new ArrayList<>();
         HotspotJump h7 = new HotspotJump(4100, 1950, 100, 7, R.drawable.pin);
         listaHotspotsJ7.put(7, h7);
-        Escena escena7 = new Escena(R.drawable.imagen7, "Entrada ETSIIT", 0.8f, 5530, listaHotspotsJ7, listaHotspotsI7);
+        ArrayList<HotspotInfo> listaHotspotsI7 = new ArrayList<>();
+        Escena escena7 = new Escena(R.drawable.imagen7, "Fin Escaleras", 0.8f, 5530, listaHotspotsJ7, listaHotspotsI7);
         /* ----------------------------- */
         Map<Integer, HotspotJump> listaHotspotsJ8 = new HashMap<>();
-        ArrayList<HotspotInfo> listaHotspotsI8 = new ArrayList<>();
         HotspotJump h8 = new HotspotJump(1600, 2000, 100, 8, R.drawable.pin);
         listaHotspotsJ8.put(8, h8);
-        Escena escena8 = new Escena(R.drawable.imagen8, "Entrada ETSIIT", 0.8f, 3660, listaHotspotsJ8, listaHotspotsI8);
+        ArrayList<HotspotInfo> listaHotspotsI8 = new ArrayList<>();
+        Escena escena8 = new Escena(R.drawable.imagen8, "Primera Planta", 0.8f, 3660, listaHotspotsJ8, listaHotspotsI8);
         /* ----------------------------- */
         Map<Integer, HotspotJump> listaHotspotsJ9 = new HashMap<>();
         ArrayList<HotspotInfo> listaHotspotsI9 = new ArrayList<>();
-        String title = "Info de prueba";
-        String descrip = "Esta sería la descripción";
-        HotspotInfo h9 = new HotspotInfo(4160, 1900, 100, title, descrip, R.drawable.info);
-        listaHotspotsI9.add(h9);
-        Escena escena9 = new Escena(R.drawable.imagen9, "Entrada ETSIIT", 0.8f, 3800, listaHotspotsJ9, listaHotspotsI9);
+        title = "Destino";
+        descrip = "Este es tu destino, el aula 1.5.";
+        HotspotInfo h9_1 = new HotspotInfo(4160, 1900, 100, title, descrip, R.drawable.info);
+        listaHotspotsI9.add(h9_1);
+        Escena escena9 = new Escena(R.drawable.imagen9, "Entrada Aula 1.5", 0.8f, 3800, listaHotspotsJ9, listaHotspotsI9);
 
         listaEscenas.add(escena1);
         listaEscenas.add(escena2);

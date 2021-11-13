@@ -28,7 +28,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Npiapp">
+        android:theme="@style/AppTheme.Light">
         <activity
             android:name=".CanteenMenuCreator"
             android:exported="true" />
@@ -44,12 +44,15 @@
             android:parentActivityName=".MainActivity" />
         <activity
             android:name=".PanoramaController"
+            android:label="@string/guidance_title"
             android:exported="true" />
         <activity
             android:name=".SenderActivity"
+            android:label="Emisor NFC"
             android:exported="true" />
         <activity
             android:name=".ReceiverActivity"
+            android:label="Receptor NFC"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.nfc.action.NDEF_DISCOVERED" />

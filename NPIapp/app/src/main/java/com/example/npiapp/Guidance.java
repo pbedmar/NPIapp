@@ -95,14 +95,21 @@ public class Guidance extends AppCompatActivity {
             Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
         }
         else {
-            ArrayList<Integer> ruta = rutas.get(elemInicio).get(elemFin);
-            if(ruta == null) {
+            Map<String, ArrayList<Integer>> ruta1 = rutas.get(elemInicio);
+            ArrayList<Integer> ruta2;
+            if(ruta1 != null) {
+                ruta2 = ruta1.get(elemFin);
+            }
+            else {
+                ruta2 = null;
+            }
+            if(ruta2 == null) {
                 String text = "Ruta no disponible";
                 Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
             }
             else {
                 Intent intent = new Intent(this, PanoramaController.class);
-                intent.putExtra(EXTRA_MESSAGE, ruta);
+                intent.putExtra(EXTRA_MESSAGE, ruta2);
                 startActivity(intent);
             }
         }
@@ -122,7 +129,7 @@ public class Guidance extends AppCompatActivity {
         ruta1.add(7);
         ruta1.add(8);
         Map<String, ArrayList<Integer>> finRuta1 = new HashMap<String, ArrayList<Integer>>();
-        finRuta1.put("Despacho Marcelino", ruta1);
+        finRuta1.put("Aula 1.5", ruta1);
         rutas.put("Entrada ETSIIT", finRuta1);
     }
 }

@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -119,6 +120,7 @@ public class CanteenMenu extends AppCompatActivity {
         }
     }
 
+    @SuppressLint("ResourceAsColor")
     protected void loadOrders() {
 
         String[] dates = new String[numberOfDatesToShow + 1];
@@ -179,11 +181,12 @@ public class CanteenMenu extends AppCompatActivity {
                     }
                 });
 
+                TextView textEstado = newCard.findViewById(R.id.estadoText);
                 if (menu.getDay_with_order() == 2) {
-                    newCard.setBackgroundColor(Color.GREEN);
+                    textEstado.setText("Pedido registrado");
                 }
                 else {
-                    newCard.setBackgroundColor(Color.YELLOW);
+                    textEstado.setText("Pedido sin registrar");
                 }
 
                 linearLayout.addView(newCard);

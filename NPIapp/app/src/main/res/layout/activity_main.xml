@@ -8,6 +8,7 @@
 
     <ScrollView
         android:layout_width="match_parent"
+        android:background="@color/colorFondo"
         android:layout_height="match_parent">
 
         <LinearLayout
@@ -19,7 +20,7 @@
                 android:id="@+id/welcome_card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@android:drawable/dialog_holo_light_frame">
+                android:background="@color/dialog_holo">
 
                 <RelativeLayout
                     android:id="@+id/welcome_banner"
@@ -100,7 +101,7 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@android:drawable/dialog_holo_light_frame">
+                android:background="@color/dialog_holo">
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -133,14 +134,15 @@
                     android:layout_centerInParent="true"
                     android:layout_marginEnd="7dp"
                     android:onClick="launchGuidance"
-                    android:text="Ir" />
+                    android:text="Ir"
+                    android:textColor="@color/black" />
 
             </RelativeLayout>
 
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@android:drawable/dialog_holo_light_frame">
+                android:background="@color/dialog_holo">
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -173,7 +175,8 @@
                     android:layout_centerInParent="true"
                     android:layout_marginEnd="7dp"
                     android:onClick="launchCanteenMenu"
-                    android:text="Ir" />
+                    android:text="Ir"
+                    android:textColor="@color/black" />
 
             </RelativeLayout>
 
