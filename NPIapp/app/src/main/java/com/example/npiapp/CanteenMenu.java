@@ -183,10 +183,10 @@ public class CanteenMenu extends AppCompatActivity {
 
                 TextView textEstado = newCard.findViewById(R.id.estadoText);
                 if (menu.getDay_with_order() == 2) {
-                    textEstado.setText("Pedido registrado");
+                    textEstado.setText("Pedido recogido");
                 }
                 else {
-                    textEstado.setText("Pedido sin registrar");
+                    textEstado.setText("Pedido sin recoger");
                 }
 
                 linearLayout.addView(newCard);

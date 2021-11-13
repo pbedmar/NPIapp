@@ -37,6 +37,8 @@
         <entry key="app/src/main/res/layout/activity_canteen_menu_creator_cardview.xml" value="0.2682291666666667" />
         <entry key="app/src/main/res/layout/activity_canteen_menu_creator_summary_entry.xml" value="0.26992753623188404" />
         <entry key="app/src/main/res/layout/activity_canteen_menu_creator_textview.xml" value="0.1875" />
+        <entry key="app/src/main/res/layout/activity_canteen_menu_ordered_menu.xml" value="0.15070921985815602" />
+        <entry key="app/src/main/res/layout/activity_canteen_menu_ordered_menu_item.xml" value="0.15070921985815602" />
         <entry key="app/src/main/res/layout/activity_cantina_menu.xml" value="0.1" />
         <entry key="app/src/main/res/layout/activity_cantine_menu.xml" value="0.1" />
         <entry key="app/src/main/res/layout/activity_guidance.xml" value="0.24375" />
