@@ -33,9 +33,13 @@
     <string-array name="rutas_inicio">
         <item></item>
         <item>Entrada ETSIIT</item>
+        <item>Despacho Marcelino</item>
+        <item>Aula 1.5</item>
     </string-array>
     <string-array name="rutas_fin">
         <item></item>
+        <item>Entrada ETSIIT</item>
         <item>Despacho Marcelino</item>
+        <item>Aula 1.5</item>
     </string-array>
 </resources>
