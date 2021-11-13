@@ -49,8 +49,8 @@ public class CanteenMenuCreator extends AppCompatActivity implements SensorEvent
     private Sensor sensorAccelerometer;
     private long lastUpdate = 0;
     private long lastDetected = 0;
-    private float umbralAceptar = 2.0f;
-    private float umbralRechazar = 2.0f;
+    private float umbralAceptar = 1.0f;
+    private float umbralRechazar = 1.0f;
 
     public static final int AUTENTICATION_REQUEST = 1;
 
@@ -283,7 +283,7 @@ public class CanteenMenuCreator extends AppCompatActivity implements SensorEvent
                             lastDetected = System.currentTimeMillis();
                             nextCard("translationX");
                         }
-                        else if(z > 3.0f && abs(x) < umbralAceptar) {
+                        else if(z > 4.0f && abs(x) < umbralAceptar) {
                             Log.d("pedro", "X Right axis: " + x);
                             Log.d("pedro", "Right shake detected");
                             orderedMeals[currentCard] = true;
