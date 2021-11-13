@@ -2,7 +2,7 @@
 <resources>
     <color name="dialog_holo">@android:drawable/dialog_holo_dark_frame</color>
 
-    <color name="colorPrin">#5e35b1</color>
-    <color name="colorFondo">#37474f</color>
-    <color name="colorFondoCard">#3E2723</color>
+    <color name="colorPrin">#717171</color>
+    <color name="colorFondo">#000000</color>
+    <color name="colorFondoCard">#212121</color>
 </resources>

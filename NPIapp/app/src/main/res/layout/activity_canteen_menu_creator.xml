@@ -64,7 +64,6 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Total: "
-                        android:textColor="@color/black"
                         android:textStyle="bold" />
 
                     <TextView
@@ -72,7 +71,6 @@
                         style="@android:style/TextAppearance.DeviceDefault.Medium"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textColor="@color/black"
                         android:textStyle="bold" />
 
                     <TextView
@@ -99,8 +97,7 @@
                         android:layout_margin="1dp"
                         android:layout_weight="1"
                         android:onClick="cancelOrder"
-                        android:text="Cancelar"
-                        android:textColor="@color/black" />
+                        android:text="Cancelar" />
 
                     <Button
                         android:layout_width="match_parent"
@@ -108,8 +105,7 @@
                         android:layout_margin="1dp"
                         android:layout_weight="1"
                         android:onClick="confirmOrder"
-                        android:text="Confirmar"
-                        android:textColor="@color/black" />
+                        android:text="Confirmar"/>
 
                 </LinearLayout>
 
