@@ -5,6 +5,7 @@
     android:id="@+id/layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorFondo"
     tools:context=".CanteenMenu">
 
     <ScrollView
@@ -36,7 +37,8 @@
             android:layout_alignParentEnd="true"
             android:layout_marginEnd="7dp"
             android:onClick="launchCanteenMenuCreator"
-            android:text="Encargar" />
+            android:text="Encargar"
+            android:textColor="@color/black" />
 
         <Spinner
             android:id="@+id/date_spinner"

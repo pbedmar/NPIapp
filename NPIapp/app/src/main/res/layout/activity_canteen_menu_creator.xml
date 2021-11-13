@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:background="@color/colorFondo"
     android:layout_height="match_parent"
     tools:context=".CanteenMenuCreator">
 
@@ -13,20 +14,20 @@
         android:orientation="vertical"
         android:visibility="invisible">
 
-        <androidx.cardview.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+        <androidx.cardview.widget.CardView
             android:id="@+id/order_card"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="center"
             android:layout_margin="12dp"
-            card_view:cardBackgroundColor="#FFFF8D"
-            card_view:cardCornerRadius="4dp"
-            card_view:cardElevation="5dp">
+            app:cardCornerRadius="4dp"
+            app:cardElevation="5dp">
 
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_margin="5dp">
+                android:background="@color/colorFondoCard"
+                android:layout_margin="0dp">
 
                 <TextView
                     android:id="@+id/summary_text"
@@ -42,7 +43,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_below="@id/summary_text"
-                    android:layout_marginTop="3dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
                     android:orientation="vertical">
 
                 </LinearLayout>
@@ -61,6 +64,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Total: "
+                        android:textColor="@color/black"
                         android:textStyle="bold" />
 
                     <TextView
@@ -68,6 +72,7 @@
                         style="@android:style/TextAppearance.DeviceDefault.Medium"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:textColor="@color/black"
                         android:textStyle="bold" />
 
                     <TextView
@@ -75,6 +80,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/euro_symbol_text"
+                        android:textColor="@color/black"
                         android:textStyle="bold" />
 
                 </LinearLayout>
@@ -93,7 +99,8 @@
                         android:layout_margin="1dp"
                         android:layout_weight="1"
                         android:onClick="cancelOrder"
-                        android:text="Cancelar" />
+                        android:text="Cancelar"
+                        android:textColor="@color/black" />
 
                     <Button
                         android:layout_width="match_parent"
@@ -101,7 +108,8 @@
                         android:layout_margin="1dp"
                         android:layout_weight="1"
                         android:onClick="confirmOrder"
-                        android:text="Confirmar" />
+                        android:text="Confirmar"
+                        android:textColor="@color/black" />
 
                 </LinearLayout>
 

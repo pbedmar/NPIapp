@@ -10,73 +10,88 @@
         android:layout_margin="12dp"
         android:gravity="center"
         android:visibility="visible"
-        card_view:cardBackgroundColor="#BFA8FF"
+        card_view:cardBackgroundColor="@color/colorPrin"
         card_view:cardCornerRadius="4dp"
         card_view:cardElevation="5dp">
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
+            android:orientation="vertical"
             android:layout_height="wrap_content">
 
-            <LinearLayout
-                android:id="@+id/card_title"
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                android:orientation="horizontal">
+                android:layout_height="wrap_content">
 
-                <TextView
-                    style="@android:style/TextAppearance.DeviceDefault.Large"
+                <LinearLayout
+                    android:id="@+id/card_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        style="@android:style/TextAppearance.DeviceDefault.Large"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Pedido día " />
+
+                    <TextView
+                        android:id="@+id/order_date"
+                        style="@android:style/TextAppearance.DeviceDefault.Large"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="00/00/0000" />
+
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:id="@+id/meals_layout"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Pedido día " />
+                    android:layout_below="@id/card_title"
+                    android:layout_alignParentLeft="true"
+                    android:layout_marginStart="5dp"
+                    android:layout_toStartOf="@id/price_ordered_menu_layout"
+                    android:orientation="vertical" />
 
-                <TextView
-                    android:id="@+id/order_date"
-                    style="@android:style/TextAppearance.DeviceDefault.Large"
+                <LinearLayout
+                    android:id="@+id/price_ordered_menu_layout"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="00/00/0000" />
+                    android:layout_below="@id/card_title"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginEnd="5dp"
+                    android:orientation="horizontal">
 
-            </LinearLayout>
+                    <TextView
+                        android:id="@+id/price_ordered_menu_text"
+                        style="@android:style/TextAppearance.DeviceDefault.Medium"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
 
+                    <TextView
+                        style="@android:style/TextAppearance.DeviceDefault.Medium"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/euro_symbol_text" />
 
-            <LinearLayout
-                android:id="@+id/meals_layout"
+                </LinearLayout>
+
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/estadoText"
+                style="@android:style/TextAppearance.DeviceDefault.Large"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/card_title"
-                android:layout_alignParentLeft="true"
-                android:layout_marginStart="5dp"
-                android:layout_toStartOf="@id/price_ordered_menu_layout"
-                android:orientation="vertical" />
-
-            <LinearLayout
-                android:id="@+id/price_ordered_menu_layout"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/card_title"
-                android:layout_alignParentEnd="true"
-                android:layout_marginStart="5dp"
                 android:layout_marginTop="5dp"
-                android:layout_marginEnd="5dp"
-                android:orientation="horizontal">
+                android:layout_gravity="center_horizontal" />
 
-                <TextView
-                    android:id="@+id/price_ordered_menu_text"
-                    style="@android:style/TextAppearance.DeviceDefault.Medium"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-
-                <TextView
-                    style="@android:style/TextAppearance.DeviceDefault.Medium"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/euro_symbol_text" />
-
-            </LinearLayout>
-
-        </RelativeLayout>
+        </LinearLayout>
 
     </androidx.cardview.widget.CardView>
 

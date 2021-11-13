@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
+    android:background="@color/colorFondo"
     android:layout_height="match_parent">
 
     <androidx.cardview.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
@@ -9,7 +10,7 @@
         android:layout_margin="12dp"
         android:gravity="center"
         android:visibility="visible"
-        card_view:cardBackgroundColor="#BFA8FF"
+        card_view:cardBackgroundColor="@color/colorPrin"
         card_view:cardCornerRadius="4dp"
         card_view:cardElevation="5dp">
 
