@@ -30,8 +30,7 @@ public class SenderActivity extends AppCompatActivity implements OutcomingNfcMan
         if (nfcAdapter == null) {
             Toast.makeText(this, "Nfc is not supported on this device", Toast.LENGTH_SHORT).show();
             finish();
-        }
-        else {
+        } else {
             if (!nfcAdapter.isEnabled()) {
                 Toast.makeText(this, "NFC disabled on this device. Turn on to proceed", Toast.LENGTH_SHORT).show();
             }
@@ -51,6 +50,7 @@ public class SenderActivity extends AppCompatActivity implements OutcomingNfcMan
 
     /**
      * Método para obtener la información a enviar en la etiqueta
+     *
      * @return información a enviar
      */
     @Override

@@ -18,6 +18,7 @@ public class OutcomingNfcManager implements NfcAdapter.CreateNdefMessageCallback
 
     /**
      * Método para crear la etiqueta NFC
+     *
      * @param event
      * @return
      */
@@ -32,6 +33,7 @@ public class OutcomingNfcManager implements NfcAdapter.CreateNdefMessageCallback
 
     /**
      * Método que se ejecuta al completar el envío
+     *
      * @param event
      */
     @Override
@@ -45,6 +47,7 @@ public class OutcomingNfcManager implements NfcAdapter.CreateNdefMessageCallback
      * */
     public interface NfcActivity {
         String getOutcomingMessage();
+
         void signalResult();
     }
 }

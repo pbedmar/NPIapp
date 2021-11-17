@@ -1,6 +1,6 @@
 package com.example.npiapp;
 
-public class HotspotJump extends Hotspot{
+public class HotspotJump extends Hotspot {
     private int indiceEscena;
 
     public HotspotJump(int x, int y, int radio, int indiceEscena, int icono) {
@@ -8,7 +8,7 @@ public class HotspotJump extends Hotspot{
         this.indiceEscena = indiceEscena;
     }
 
-    public int getEscena(){
+    public int getEscena() {
         return indiceEscena;
     }
 }

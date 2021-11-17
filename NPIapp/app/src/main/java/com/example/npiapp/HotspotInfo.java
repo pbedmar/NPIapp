@@ -2,7 +2,7 @@ package com.example.npiapp;
 
 import android.graphics.Point;
 
-public class HotspotInfo extends Hotspot{
+public class HotspotInfo extends Hotspot {
     private String title, descrip;
 
     public HotspotInfo(int x, int y, int radio, String title, String descrip, int icono) {
@@ -11,7 +11,11 @@ public class HotspotInfo extends Hotspot{
         this.descrip = descrip;
     }
 
-    public String getTitle() { return title; }
+    public String getTitle() {
+        return title;
+    }
 
-    public String getDescrip() { return descrip; }
+    public String getDescrip() {
+        return descrip;
+    }
 }

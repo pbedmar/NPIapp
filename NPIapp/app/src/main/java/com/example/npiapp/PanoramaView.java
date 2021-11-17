@@ -86,6 +86,7 @@ public class PanoramaView extends View {
 
     /***********************/
     /*    Constructores    */
+
     /***********************/
 
     public PanoramaView(Context context) {
@@ -106,6 +107,7 @@ public class PanoramaView extends View {
 
     /**
      * Inicialización de las variables
+     *
      * @param ruta ruta que se quiere mostrar
      */
     public void initialize(ArrayList<Integer> ruta) {
@@ -124,6 +126,7 @@ public class PanoramaView extends View {
 
     /**
      * Inicialización de la variable como copia de otro panorama
+     *
      * @param p nuevo panorama
      */
     public void initialize(PanoramaView p) {
@@ -160,6 +163,7 @@ public class PanoramaView extends View {
     /**
      * Método que realiza el dibujo de la imagen, este método es llamado siempre que se
      * invoca al método invalidate().
+     *
      * @param canvas
      */
     public void onDraw(Canvas canvas) {
@@ -180,15 +184,21 @@ public class PanoramaView extends View {
 
     /**
      * Método para obtener la posición dentro de la ruta
+     *
      * @return Posición dentro de la ruta
      */
-    public Integer getPosRuta() { return posRuta; }
+    public Integer getPosRuta() {
+        return posRuta;
+    }
 
     /**
      * Método para obtener la longitud de la ruta
+     *
      * @return Longitud de la ruta
      */
-    public Integer getLenRuta() { return ruta.size(); }
+    public Integer getLenRuta() {
+        return ruta.size();
+    }
 
     /**
      * Método para cargar la imagen de la escena actual
@@ -291,6 +301,7 @@ public class PanoramaView extends View {
 
     /**
      * Método para obtener el título de la escena actual
+     *
      * @return Título de la escena actual
      */
     public String getTituloEscena() {
@@ -299,6 +310,7 @@ public class PanoramaView extends View {
 
     /**
      * Método para modificar la orientación de la región visible de la imagen
+     *
      * @param orientacion nueva orientación
      */
     public void aplicarOrientacion(float orientacion) {
@@ -312,6 +324,7 @@ public class PanoramaView extends View {
 
     /**
      * Método para modificar la inclinación de la región visible de la imagen
+     *
      * @param inclinacion nueva inclinación
      */
     public void aplicarInclinacion(float inclinacion) {
@@ -332,6 +345,7 @@ public class PanoramaView extends View {
 
     /**
      * Método para gestionar la pulsación en la escena
+     *
      * @param x posición en x de la pulsación
      * @param y posición en y de la pulsación
      * @return hotspot que se haya pulsado o null si no se pulsa ninguno
@@ -374,6 +388,7 @@ public class PanoramaView extends View {
 
     /**
      * Método para cambiar de escena
+     *
      * @param hotspot hotspot de salto que nos llevará a la siguiente escena
      */
     public void cambiarEscena(HotspotJump hotspot) {
@@ -386,7 +401,7 @@ public class PanoramaView extends View {
      * Método para retroceder a la escena anterior
      */
     public void retrocederEscena() {
-        if(posRuta > 0) {
+        if (posRuta > 0) {
             posRuta -= 1;
             indiceEscena = ruta.get(posRuta);
             cargarImagen();
@@ -395,6 +410,7 @@ public class PanoramaView extends View {
 
     /**
      * Método para calcular la orientación de la flecha
+     *
      * @return dirección de la flecha
      */
     public int fijarFlecha() {
@@ -449,6 +465,7 @@ public class PanoramaView extends View {
 
     /**
      * Método para obtener el zoom de la escena actual
+     *
      * @return zoom de la escena actual
      */
     public float getZoom() {
@@ -457,6 +474,7 @@ public class PanoramaView extends View {
 
     /**
      * Método para aplicar el zoom a la escena actual
+     *
      * @param scaleFactor nuevo zoom
      */
     public void aplicarZoom(float scaleFactor) {
@@ -506,9 +524,9 @@ public class PanoramaView extends View {
         ArrayList<HotspotInfo> listaHotspotsI1 = new ArrayList<>();
         title = "Servicios UGR";
         descrip = "Al entrar a mano al fondo de la sala encontrarás la Secretaría, donde puedes" +
-                  " realizar trámites administrativos. Además al entrar a mano derecha encontrarás" +
-                  " una escaleras que se llevarán a la biblioteca (primera planta), y a los despachos" +
-                  " de los profesores (segunda planta).";
+                " realizar trámites administrativos. Además al entrar a mano derecha encontrarás" +
+                " una escaleras que se llevarán a la biblioteca (primera planta), y a los despachos" +
+                " de los profesores (segunda planta).";
         HotspotInfo h1_2 = new HotspotInfo(2206, 1900, 100, title, descrip, R.drawable.info);
         listaHotspotsI1.add(h1_2);
         Escena escena1 = new Escena(R.drawable.imagen1, "Entrada ETSIIT", 0.8f, 2800, listaHotspotsJ1, listaHotspotsI1);
@@ -519,12 +537,12 @@ public class PanoramaView extends View {
         ArrayList<HotspotInfo> listaHotspotsI2 = new ArrayList<>();
         title = "Zona de descanso";
         descrip = "En esta zona encontrarás bancos donde descansar o realizar tareas. Esta zona dispone" +
-                  " de enchufes, una máquina expendedora, y de un futbolín.";
+                " de enchufes, una máquina expendedora, y de un futbolín.";
         HotspotInfo h2_2 = new HotspotInfo(1656, 2050, 100, title, descrip, R.drawable.info);
         listaHotspotsI2.add(h2_2);
         title = "Servicios UGR";
         descrip = "Al bajar las escaleras a mano derecha puedes encontrar servicios de la universidad" +
-                  " como la copistería, el comedor, o la cafetería.";
+                " como la copistería, el comedor, o la cafetería.";
         HotspotInfo h2_3 = new HotspotInfo(2986, 2150, 100, title, descrip, R.drawable.info);
         listaHotspotsI2.add(h2_3);
         Escena escena2 = new Escena(R.drawable.imagen2, "Zona Descanso", 0.8f, 3750, listaHotspotsJ2, listaHotspotsI2);

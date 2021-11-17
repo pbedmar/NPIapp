@@ -33,8 +33,7 @@ public class ReceiverActivity extends AppCompatActivity {
         if (nfcAdapter == null) {
             Toast.makeText(this, "Nfc is not supported on this device", Toast.LENGTH_SHORT).show();
             finish();
-        }
-        else {
+        } else {
             if (!nfcAdapter.isEnabled()) {
                 Toast.makeText(this, "NFC disabled on this device. Turn on to proceed", Toast.LENGTH_SHORT).show();
             }
@@ -43,6 +42,7 @@ public class ReceiverActivity extends AppCompatActivity {
 
     /**
      * Método que se ejecuta al detectar un NFC
+     *
      * @param intent
      */
     @Override
@@ -70,6 +70,7 @@ public class ReceiverActivity extends AppCompatActivity {
 
     /**
      * Método para gestionar la recepción del mensaje
+     *
      * @param intent
      */
     private void receiveMessageFromDevice(Intent intent) {
@@ -89,11 +90,10 @@ public class ReceiverActivity extends AppCompatActivity {
             String[] campos = inMessage.split(";");
             Intent replyIntent = new Intent(this, CanteenMenu.class);
             replyIntent.putExtra(RESPO_NFC, campos[0]);
-            if(campos[1].equals("OK")) {
+            if (campos[1].equals("OK")) {
                 Toast.makeText(this, "Pedido registrado correctamente", Toast.LENGTH_LONG).show();
                 setResult(RESULT_OK, replyIntent);
-            }
-            else if(campos[1].equals("ERROR")) {
+            } else if (campos[1].equals("ERROR")) {
                 Toast.makeText(this, "Error al registrar pedido", Toast.LENGTH_LONG).show();
                 setResult(RESULT_CANCELED, replyIntent);
             }

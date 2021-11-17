@@ -25,8 +25,7 @@ public class PanoramaController extends AppCompatActivity implements SensorEvent
     /**
      * Clase con las distintas direcciones de la flecha de guiado
      */
-    public static class Direcciones
-    {
+    public static class Direcciones {
         public static final Integer SIN_DIRE = -1;
         public static final Integer FLECHA_IZQ = 0;
         public static final Integer FLECHA_DER = 1;
@@ -128,7 +127,7 @@ public class PanoramaController extends AppCompatActivity implements SensorEvent
 
         // Se carga la imagen seleccionada
         panorama.cargarImagen();
-        if(panorama.getPosRuta() == panorama.getLenRuta()-1) {
+        if (panorama.getPosRuta() == panorama.getLenRuta() - 1) {
             Toast.makeText(getApplicationContext(),
                     "Has llegado al destino", Toast.LENGTH_LONG)
                     .show();
@@ -140,20 +139,21 @@ public class PanoramaController extends AppCompatActivity implements SensorEvent
 
     /**
      * Método que se ejecuta al percibir un cambio en algún sensor
+     *
      * @param sensorEvent evento de cambio de algún sensor
      */
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
-        if(!mostrandoInfo) {
+        if (!mostrandoInfo) {
             // Gestión del sensor de proximidad
-            if(sensorEvent.sensor.getType() == Sensor.TYPE_PROXIMITY) {
+            if (sensorEvent.sensor.getType() == Sensor.TYPE_PROXIMITY) {
                 float distancia = sensorEvent.values[0];
-                if(distancia < 1) {
+                if (distancia < 1) {
                     panorama.retrocederEscena();
                 }
             }
             // Gestión del sensor de rotación del vector
-            if(sensorEvent.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR) {
+            if (sensorEvent.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR) {
                 // Matriz que contendrá la rotación del móvil
                 float[] rotationMatrix = new float[16];
 
@@ -175,8 +175,8 @@ public class PanoramaController extends AppCompatActivity implements SensorEvent
                 SensorManager.getOrientation(remappedRotationMatrix, orientations);
 
                 // Pasamos de radianes a grados
-                for(int i = 0; i < 3; i++) {
-                    orientations[i] = (float)(Math.toDegrees(orientations[i]));
+                for (int i = 0; i < 3; i++) {
+                    orientations[i] = (float) (Math.toDegrees(orientations[i]));
                 }
 
                 // Aplicamos la nueva orientación en la imagen
@@ -189,11 +189,11 @@ public class PanoramaController extends AppCompatActivity implements SensorEvent
 
                 // Inicializamos todas las flechas a invisible
                 ArrayList<Integer> estados = new ArrayList<>();
-                for(int i = 0; i < 8; ++i) {
+                for (int i = 0; i < 8; ++i) {
                     estados.add(View.INVISIBLE);
                 }
                 // Si es necesario mostrar alguna flecha se pasa a visible la flecha indicada
-                if(result >= 0) {
+                if (result >= 0) {
                     estados.set(result, View.VISIBLE);
                 }
 
@@ -215,25 +215,26 @@ public class PanoramaController extends AppCompatActivity implements SensorEvent
 
     /**
      * Método que se ejecuta al percibir una pulsación en la pantalla
+     *
      * @param event evento de multitouch
      * @return
      */
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if(!mostrandoInfo){
+        if (!mostrandoInfo) {
             scaleGestureDetector.onTouchEvent(event);
             // Si se detecta sólo una pulsación a la vez
-            if(event.getPointerCount() == 1){
+            if (event.getPointerCount() == 1) {
                 // Obtenemos el hotspot pulsado
-                Hotspot hotspot = panorama.pulsacion(event.getX(0),event.getY(0));
+                Hotspot hotspot = panorama.pulsacion(event.getX(0), event.getY(0));
 
                 // Si se pulsa algún hotspot
-                if(hotspot != null) {
+                if (hotspot != null) {
                     // Si es un hotspot de salto
-                    if(hotspot.getClass() == HotspotJump.class) {
+                    if (hotspot.getClass() == HotspotJump.class) {
                         // Cambiamos de escena
                         panorama.cambiarEscena((HotspotJump) hotspot);
-                        if(panorama.getPosRuta() == panorama.getLenRuta()-1) {
+                        if (panorama.getPosRuta() == panorama.getLenRuta() - 1) {
                             Toast.makeText(getApplicationContext(),
                                     "Has llegado al destino", Toast.LENGTH_LONG)
                                     .show();
@@ -247,7 +248,7 @@ public class PanoramaController extends AppCompatActivity implements SensorEvent
                         panorama.invalidate();
                     }
                     // Si es un hotspot de info
-                    else if(hotspot.getClass() == HotspotInfo.class) {
+                    else if (hotspot.getClass() == HotspotInfo.class) {
                         // Indicamos que estamos mostrando información
                         mostrandoInfo = true;
 
@@ -279,6 +280,7 @@ public class PanoramaController extends AppCompatActivity implements SensorEvent
 
     /**
      * Método para cerrar la ventana de información
+     *
      * @param view
      */
     public void cerrarVentana(View view) {
@@ -302,19 +304,20 @@ public class PanoramaController extends AppCompatActivity implements SensorEvent
 
         /**
          * Método para reescalar la imagen
+         *
          * @param detector
          * @return
          */
         @Override
         public boolean onScale(ScaleGestureDetector detector) {
-            if(!mostrandoInfo) {
+            if (!mostrandoInfo) {
                 // Obtenemos la nueva escala
-                float scaleFactor = (float)panorama.getZoom()/detector.getScaleFactor();
+                float scaleFactor = (float) panorama.getZoom() / detector.getScaleFactor();
 
                 // Se fija el zoom dentro de los límites
-                if(scaleFactor > MAX_ZOOM)
+                if (scaleFactor > MAX_ZOOM)
                     scaleFactor = MAX_ZOOM;
-                if(scaleFactor < MIN_ZOOM)
+                if (scaleFactor < MIN_ZOOM)
                     scaleFactor = MIN_ZOOM;
 
                 // Aplicamos el zoom en la imagen

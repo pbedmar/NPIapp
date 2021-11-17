@@ -58,6 +58,7 @@ public class Guidance extends AppCompatActivity {
 
     /**
      * Método que se ejecuta al pulsar el botón del QR
+     *
      * @param view
      */
     public void leerQR(View view) {

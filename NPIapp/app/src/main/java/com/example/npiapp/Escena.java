@@ -7,14 +7,14 @@ import java.util.Map;
 
 public class Escena {
     public final int imagen360;
-    public final Map<Integer,HotspotJump> listaHotspotJump;
+    public final Map<Integer, HotspotJump> listaHotspotJump;
     public final ArrayList<HotspotInfo> listaHotspotInfo;
     public float zoom;
     public int X, Y;
     public int norte;
     public String titulo;
 
-    public Escena(int imagen360, String titulo, float zoom, int norte ,Map<Integer,HotspotJump> listaHotspotJump,
+    public Escena(int imagen360, String titulo, float zoom, int norte, Map<Integer, HotspotJump> listaHotspotJump,
                   ArrayList<HotspotInfo> listaHotspotInfo) {
         this.imagen360 = imagen360;
         this.titulo = titulo;
