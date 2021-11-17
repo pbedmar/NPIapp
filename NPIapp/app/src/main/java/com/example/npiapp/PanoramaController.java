@@ -2,32 +2,29 @@ package com.example.npiapp;
 
 import static com.example.npiapp.R.id.panoramaView;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
-import android.webkit.WebView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.ArrayList;
 
 
-
 public class PanoramaController extends AppCompatActivity implements SensorEventListener {
 
-    // Clase con las distintas direcciones de la flecha de guiado
+    /**
+     * Clase con las distintas direcciones de la flecha de guiado
+     */
     public static class Direcciones
     {
         public static final Integer SIN_DIRE = -1;
@@ -54,12 +51,10 @@ public class PanoramaController extends AppCompatActivity implements SensorEvent
     private SensorManager sensorManager;
     // Sensor de rotación del vector (es un sensor software, es decir, es la combinación de varios
     // sensores hardware (giroscopio, acelerómetro y magnetómetro))
-    // Todos los sensores hardware que vayan a ser usados deben tener permisos por lo que hay que añadirlos
-    // al Manifest de la APP
     private Sensor rotationVectorSensor;
     // Detector de gestos
     private ScaleGestureDetector scaleGestureDetector;
-
+    // Sensor de proximidad
     private Sensor proximitySensor;
 
     // Variable que indica si se está mostrando info para dejar de muestrear los sensores
@@ -71,9 +66,9 @@ public class PanoramaController extends AppCompatActivity implements SensorEvent
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_panorama_controller);
 
+        // Recibimos la ruta a mostrar a través del Intent
         Intent intent = getIntent();
         ArrayList<Integer> ruta = intent.getIntegerArrayListExtra(Guidance.EXTRA_MESSAGE);
-        Log.i("INFO_ruta", String.valueOf(ruta.get(0)));
 
         // Obtenemos el objeto PanoramaView
         panorama = findViewById(panoramaView);
@@ -93,13 +88,16 @@ public class PanoramaController extends AppCompatActivity implements SensorEvent
         // Obtenemos el detector de gestos
         scaleGestureDetector = new ScaleGestureDetector(this, new OnPinchListener());
 
+        // Obtenemos el sensor de proximidad
         proximitySensor = sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
 
         // Se indica que no se está mostrando info
         mostrandoInfo = false;
     }
 
-    // Método que se ejecuta cuando la actividad está activa
+    /**
+     * Método que se ejecuta cuando la actividad está activa
+     */
     @Override
     protected void onResume() {
         super.onResume();
@@ -107,7 +105,9 @@ public class PanoramaController extends AppCompatActivity implements SensorEvent
         sensorManager.registerListener(this, proximitySensor, SensorManager.SENSOR_DELAY_GAME);
     }
 
-    // Método que se ejecuta cuando la actividad no está activa (segundo plano)
+    /**
+     * Método que se ejecuta cuando la actividad no está activa (segundo plano)
+     */
     @Override
     protected void onPause() {
         super.onPause();
@@ -115,7 +115,9 @@ public class PanoramaController extends AppCompatActivity implements SensorEvent
         sensorManager.unregisterListener(this, proximitySensor);
     }
 
-    // Método que se ejecuta al iniciar la actividad
+    /**
+     * Método que se ejecuta al iniciar la actividad
+     */
     @Override
     protected void onStart() {
         super.onStart();
@@ -134,20 +136,23 @@ public class PanoramaController extends AppCompatActivity implements SensorEvent
 
         // Redibuja el lienzo
         panorama.invalidate();
-
     }
 
-    // Método que se ejecuta al percibir un cambio en algún sensor
+    /**
+     * Método que se ejecuta al percibir un cambio en algún sensor
+     * @param sensorEvent evento de cambio de algún sensor
+     */
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
         if(!mostrandoInfo) {
+            // Gestión del sensor de proximidad
             if(sensorEvent.sensor.getType() == Sensor.TYPE_PROXIMITY) {
                 float distancia = sensorEvent.values[0];
-                Log.i("Info_proxi", Float.toString(distancia));
                 if(distancia < 1) {
                     panorama.retrocederEscena();
                 }
             }
+            // Gestión del sensor de rotación del vector
             if(sensorEvent.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR) {
                 // Matriz que contendrá la rotación del móvil
                 float[] rotationMatrix = new float[16];
@@ -173,9 +178,6 @@ public class PanoramaController extends AppCompatActivity implements SensorEvent
                 for(int i = 0; i < 3; i++) {
                     orientations[i] = (float)(Math.toDegrees(orientations[i]));
                 }
-
-                String cadena = "X: " + orientations[0] + " Y: " + orientations[1] + " Z: " + orientations[2];
-                Log.i("INFO", cadena);
 
                 // Aplicamos la nueva orientación en la imagen
                 panorama.aplicarOrientacion(orientations[0]);
@@ -211,7 +213,11 @@ public class PanoramaController extends AppCompatActivity implements SensorEvent
         }
     }
 
-    // Método que se ejecuta al percibir una pulsación en la pantalla
+    /**
+     * Método que se ejecuta al percibir una pulsación en la pantalla
+     * @param event evento de multitouch
+     * @return
+     */
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if(!mostrandoInfo){
@@ -271,6 +277,10 @@ public class PanoramaController extends AppCompatActivity implements SensorEvent
 
     }
 
+    /**
+     * Método para cerrar la ventana de información
+     * @param view
+     */
     public void cerrarVentana(View view) {
         // Se vuelve a fijar el layout de la imagen
         setContentView(R.layout.activity_panorama_controller);
@@ -290,7 +300,11 @@ public class PanoramaController extends AppCompatActivity implements SensorEvent
     private class OnPinchListener extends
             ScaleGestureDetector.SimpleOnScaleGestureListener {
 
-        // Método para reescalar la imagen
+        /**
+         * Método para reescalar la imagen
+         * @param detector
+         * @return
+         */
         @Override
         public boolean onScale(ScaleGestureDetector detector) {
             if(!mostrandoInfo) {
@@ -302,8 +316,6 @@ public class PanoramaController extends AppCompatActivity implements SensorEvent
                     scaleFactor = MAX_ZOOM;
                 if(scaleFactor < MIN_ZOOM)
                     scaleFactor = MIN_ZOOM;
-
-                Log.i("INFO_Zoom", new String(" ZOOM: " + scaleFactor));
 
                 // Aplicamos el zoom en la imagen
                 panorama.aplicarZoom(scaleFactor);

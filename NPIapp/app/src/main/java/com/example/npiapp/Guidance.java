@@ -49,11 +49,17 @@ public class Guidance extends AppCompatActivity {
         adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         fin_ruta.setAdapter(adapter2);
 
+        // Se obtiene el lector QR
         qrScan = new IntentIntegrator(this);
         qrScan.setPrompt("Escanear un QR");
+        // Se fija que el lector esté siempre en orientación vertical
         qrScan.setOrientationLocked(true);
     }
 
+    /**
+     * Método que se ejecuta al pulsar el botón del QR
+     * @param view
+     */
     public void leerQR(View view) {
         qrScan.initiateScan();
     }

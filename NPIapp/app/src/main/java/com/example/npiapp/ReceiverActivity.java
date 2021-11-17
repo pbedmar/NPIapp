@@ -15,10 +15,11 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class ReceiverActivity extends AppCompatActivity {
 
+
     public static final String RESPO_NFC = "com.example.emisornfc.RESPONSE";
-
+    // Tipo de la etiqueta a recibir
     public static final String MIME_TEXT_PLAIN = "text/plain";
-
+    // Sensor NFC
     private NfcAdapter nfcAdapter;
 
     @Override
@@ -26,6 +27,7 @@ public class ReceiverActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_receiver);
 
+        // Se obtiene el sensor NFC
         this.nfcAdapter = NfcAdapter.getDefaultAdapter(this);
 
         if (nfcAdapter == null) {
@@ -39,11 +41,14 @@ public class ReceiverActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Método que se ejecuta al detectar un NFC
+     * @param intent
+     */
     @Override
     protected void onNewIntent(Intent intent) {
-        // also reading NFC message from here in case this activity is already started in order
-        // not to start another instance of this activity
         super.onNewIntent(intent);
+        // Se gestiona la recepción del mensaje
         receiveMessageFromDevice(intent);
     }
 
@@ -51,9 +56,9 @@ public class ReceiverActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        // foreground dispatch should be enabled here, as onResume is the guaranteed place where app
-        // is in the foreground
+        // Se habilita la recepción con el NFC
         enableForegroundDispatch(this, this.nfcAdapter);
+        // Se gestiona la recepción del mensaje
         receiveMessageFromDevice(getIntent());
     }
 
@@ -63,9 +68,15 @@ public class ReceiverActivity extends AppCompatActivity {
         disableForegroundDispatch(this, this.nfcAdapter);
     }
 
+    /**
+     * Método para gestionar la recepción del mensaje
+     * @param intent
+     */
     private void receiveMessageFromDevice(Intent intent) {
         String action = intent.getAction();
+        // Si se ha descubierto una etiqueta NFC
         if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action)) {
+            // Se obtiene la información del mensaje
             Parcelable[] parcelables = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
 
             NdefMessage inNdefMessage = (NdefMessage) parcelables[0];
@@ -74,20 +85,16 @@ public class ReceiverActivity extends AppCompatActivity {
 
             String inMessage = new String(ndefRecord_0.getPayload());
 
-            if(inMessage.equals("OK")) {
-                Toast.makeText(this, "Pedido registrado correctamente", Toast.LENGTH_LONG).show();
-            }
-            else if(inMessage.equals("ERROR")) {
-                Toast.makeText(this, "Error al registrar pedido", Toast.LENGTH_LONG).show();
-            }
-
+            // Se vuelve a la actividad de los menús indicando el resultado del NFC
             String[] campos = inMessage.split(";");
             Intent replyIntent = new Intent(this, CanteenMenu.class);
             replyIntent.putExtra(RESPO_NFC, campos[0]);
             if(campos[1].equals("OK")) {
+                Toast.makeText(this, "Pedido registrado correctamente", Toast.LENGTH_LONG).show();
                 setResult(RESULT_OK, replyIntent);
             }
             else if(campos[1].equals("ERROR")) {
+                Toast.makeText(this, "Error al registrar pedido", Toast.LENGTH_LONG).show();
                 setResult(RESULT_CANCELED, replyIntent);
             }
             finish();
@@ -118,7 +125,6 @@ public class ReceiverActivity extends AppCompatActivity {
         final Intent intent = new Intent(activity.getApplicationContext(), activity.getClass());
         intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
-        //
         final PendingIntent pendingIntent = PendingIntent.getActivity(activity.getApplicationContext(), 0, intent, 0);
 
         IntentFilter[] filters = new IntentFilter[1];

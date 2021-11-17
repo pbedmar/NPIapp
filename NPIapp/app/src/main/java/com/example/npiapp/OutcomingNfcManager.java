@@ -8,6 +8,7 @@ import android.nfc.NfcEvent;
 public class OutcomingNfcManager implements NfcAdapter.CreateNdefMessageCallback,
         NfcAdapter.OnNdefPushCompleteCallback {
 
+    // Tipo de la etiqueta a enviar
     public static final String MIME_TEXT_PLAIN = "text/plain";
     private NfcActivity activity;
 
@@ -15,10 +16,13 @@ public class OutcomingNfcManager implements NfcAdapter.CreateNdefMessageCallback
         this.activity = activity;
     }
 
+    /**
+     * Método para crear la etiqueta NFC
+     * @param event
+     * @return
+     */
     @Override
     public NdefMessage createNdefMessage(NfcEvent event) {
-        // creating outcoming NFC message with a helper method
-        // you could as well create it manually and will surely need, if Android version is too low
         String outString = activity.getOutcomingMessage();
         byte[] outBytes = outString.getBytes();
         NdefRecord outRecord = NdefRecord.createMime(MIME_TEXT_PLAIN, outBytes);
@@ -26,10 +30,12 @@ public class OutcomingNfcManager implements NfcAdapter.CreateNdefMessageCallback
         return new NdefMessage(outRecord);
     }
 
+    /**
+     * Método que se ejecuta al completar el envío
+     * @param event
+     */
     @Override
     public void onNdefPushComplete(NfcEvent event) {
-        // onNdefPushComplete() is called on the Binder thread, so remember to explicitly notify
-        // your view on the UI thread
         activity.signalResult();
     }
 

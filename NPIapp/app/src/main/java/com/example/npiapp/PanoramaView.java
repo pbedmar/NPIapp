@@ -3,42 +3,15 @@ package com.example.npiapp;
 
 import static android.graphics.Bitmap.createBitmap;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
-import android.graphics.Point;
-import android.graphics.Rect;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.PointF;
-import android.hardware.Sensor;
-import android.hardware.SensorManager;
-import android.os.Bundle;
+import android.graphics.Matrix;
+import android.graphics.Rect;
 import android.util.AttributeSet;
-import android.util.DisplayMetrics;
-import android.view.Display;
-import android.view.MotionEvent;
-import android.view.View;
 import android.util.Log;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ListAdapter;
-import android.widget.ScrollView;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import java.lang.Math;
-
-import androidx.annotation.Nullable;
+import android.view.View;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -47,8 +20,10 @@ import java.util.Map;
 
 public class PanoramaView extends View {
 
+    // Ruta que se quiere mostrar
     private ArrayList<Integer> ruta;
 
+    // Posición dentro de la ruta en que nos encontramos
     private int posRuta;
 
     // Lista que contiene las escenas
@@ -66,6 +41,9 @@ public class PanoramaView extends View {
     // Resolución en píxeles de la pantalla a usar
     private final int pixelX = 1080;
     private final int pixelY = 2148;
+
+    // Alto máximo de la pantalla en píxeles
+    private final int maxPantalla = 2400;
 
 
     /*********************/
@@ -88,25 +66,26 @@ public class PanoramaView extends View {
     private float scaleX;
     private float scaleY;
 
-    private final int maxPantalla = 2400;
-
-
-    // Matriz para guardar los valores del sensor de rotación del vector
+    // Matriz para guardar las escalas de ambos ejes
     private Matrix matrix;
 
+    // Desplazamiento horizontal por cada grado
     private float desplaPorGrado;
+    // Desplazamiento vertical por cada grado
     private float desplaPorGradoVertical;
 
+    // Orientación del móvil
     private float orientacionNorma;
 
+    // Inclinación del móvil
     private float inclinacionNorma;
 
+    // Indicador de la existencia de hotspot de saltos o no
     private Boolean hayHotSpot;
 
 
     /***********************/
     /*    Constructores    */
-
     /***********************/
 
     public PanoramaView(Context context) {
@@ -124,10 +103,12 @@ public class PanoramaView extends View {
         crearRutaPrueba();
     }
 
-    // Inicialización de las variables
-    public void initialize(ArrayList<Integer> ruta) {
-        Log.i("Inicio", "pixelX " + getResources().getDisplayMetrics().widthPixels + "pixelY " + getResources().getDisplayMetrics().heightPixels);
 
+    /**
+     * Inicialización de las variables
+     * @param ruta ruta que se quiere mostrar
+     */
+    public void initialize(ArrayList<Integer> ruta) {
         // Se selecciona la primera escena de la lista
         posRuta = 0;
         this.ruta = ruta;
@@ -141,6 +122,10 @@ public class PanoramaView extends View {
         inclinacionNorma = 0;
     }
 
+    /**
+     * Inicialización de la variable como copia de otro panorama
+     * @param p nuevo panorama
+     */
     public void initialize(PanoramaView p) {
         this.ruta = p.ruta;
         this.posRuta = p.posRuta;
@@ -172,15 +157,13 @@ public class PanoramaView extends View {
         this.hayHotSpot = p.hayHotSpot;
     }
 
-    // Método que realiza el dibujo de la imagen, este método es llamado siempre que se
-    // invoca al método invalidate(). Preguntar al profesor si dentro del onDraw es necesario
-    // poner el invalidate() o se puede omitir
+    /**
+     * Método que realiza el dibujo de la imagen, este método es llamado siempre que se
+     * invoca al método invalidate().
+     * @param canvas
+     */
     public void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-
-        Log.i("INFO", new String("-- X: " + listaEscenas.get(indiceEscena).X + " Y: " + listaEscenas.get(indiceEscena).Y));
-        Log.i("INFO", new String("width: " + widthScale));
-        Log.i("INFO", new String("widthMapa: " + mapa.getWidth()));
 
         // Normalizar el valor de X
         listaEscenas.get(indiceEscena).X = (listaEscenas.get(indiceEscena).X + mapa.getWidth()) % mapa.getWidth();
@@ -195,10 +178,21 @@ public class PanoramaView extends View {
         invalidate();
     }
 
+    /**
+     * Método para obtener la posición dentro de la ruta
+     * @return Posición dentro de la ruta
+     */
     public Integer getPosRuta() { return posRuta; }
 
+    /**
+     * Método para obtener la longitud de la ruta
+     * @return Longitud de la ruta
+     */
     public Integer getLenRuta() { return ruta.size(); }
 
+    /**
+     * Método para cargar la imagen de la escena actual
+     */
     public void cargarImagen() {
         // Crear mapa de bits a partir de la imagen
         Bitmap mapaImagen = BitmapFactory.decodeResource(getResources(), listaEscenas.get(indiceEscena).imagen360);
@@ -208,7 +202,9 @@ public class PanoramaView extends View {
 
         // Creo el canvas para pintar los hotspots dentro de la imagen
         Canvas pintarPin = new Canvas(mapaImagenMutable);
+
         int siguientePos = posRuta + 1;
+        // Si no es la última escena de la ruta
         if (siguientePos != ruta.size()) {
             // Se indica que hay hotspots de salto dibujados
             hayHotSpot = true;
@@ -216,7 +212,7 @@ public class PanoramaView extends View {
             // Obtenemos la siguiente escena
             int siguienteEscena = ruta.get(siguientePos);
 
-            // Hago bitmap del hotspot de salto
+            // Hago bitmap del hotspot de salto que nos lleva a la siguiente escena
             Bitmap puntoInf = BitmapFactory.decodeResource(getResources(), listaEscenas.get(indiceEscena).listaHotspotJump.get(siguienteEscena).icono);
 
             // Lo transformo en mutable
@@ -237,6 +233,7 @@ public class PanoramaView extends View {
             hayHotSpot = false;
         }
 
+        // Pintamos los hotspot de información
         for (int i = 0; i < listaEscenas.get(indiceEscena).listaHotspotInfo.size(); ++i) {
             // Hago bitmap del hotspot de informacion
             Bitmap puntoInf = BitmapFactory.decodeResource(getResources(), listaEscenas.get(indiceEscena).listaHotspotInfo.get(i).icono);
@@ -260,8 +257,6 @@ public class PanoramaView extends View {
         widthImagen = mapaImagen.getWidth();
         heightImagen = mapaImagen.getHeight();
 
-        Log.i("INFO", new String("widthImg: " + widthImagen + " heightImg: " + heightImagen));
-
         heightScreen = heightImagen;
         widthScreen = (int) (heightScreen * proporcion);
 
@@ -275,7 +270,7 @@ public class PanoramaView extends View {
         matrix = new Matrix();
         matrix.postScale(scaleX, scaleY);
 
-        // Se calcula cuantos pixeles hay por grado
+        // Se calcula cuantos pixeles se desplaza por grado
         desplaPorGrado = widthImagen / 360f;
         int alturaIni = (int) (heightImagen - heightScale) / 2;
         desplaPorGradoVertical = alturaIni / 45f;
@@ -294,11 +289,18 @@ public class PanoramaView extends View {
         listaEscenas.get(indiceEscena).Y = (int) (alturaIni + inclinacionNorma * desplaPorGradoVertical);
     }
 
+    /**
+     * Método para obtener el título de la escena actual
+     * @return Título de la escena actual
+     */
     public String getTituloEscena() {
         return listaEscenas.get(indiceEscena).titulo;
     }
 
-    // Método para modificar la orientación de la región visible de la imagen
+    /**
+     * Método para modificar la orientación de la región visible de la imagen
+     * @param orientacion nueva orientación
+     */
     public void aplicarOrientacion(float orientacion) {
         // Normalizamos los grados, ya que originalmente están en el rango [-180, 180]
         orientacionNorma = (orientacion + 360) % 360;
@@ -308,11 +310,13 @@ public class PanoramaView extends View {
         listaEscenas.get(indiceEscena).X = (int) (listaEscenas.get(indiceEscena).norte + orientacionNorma * desplaPorGrado - widthScale / 2);
     }
 
-    // Método para modificar la inclinación de la región visible de la imagen
+    /**
+     * Método para modificar la inclinación de la región visible de la imagen
+     * @param inclinacion nueva inclinación
+     */
     public void aplicarInclinacion(float inclinacion) {
         inclinacionNorma = inclinacion;
         int alturaIni = (int) (heightImagen - heightScale) / 2;
-        Log.i("INFO_Inclinacion", new String("Inclinacion: " + inclinacion + " alturaIni: " + alturaIni));
 
         // Calculamos el valor de Y con la nueva inclinación
         if (alturaIni + inclinacionNorma * desplaPorGradoVertical < 0) {
@@ -326,29 +330,38 @@ public class PanoramaView extends View {
         }
     }
 
+    /**
+     * Método para gestionar la pulsación en la escena
+     * @param x posición en x de la pulsación
+     * @param y posición en y de la pulsación
+     * @return hotspot que se haya pulsado o null si no se pulsa ninguno
+     */
     public Hotspot pulsacion(float x, float y) {
         float factorX = (float) widthScale / pixelX;
         float factorY = (float) heightScale / pixelY;
+
+        // Calcular posición de la pulsación dentro del mapa de bits
         float X = (float) (x * factorX + listaEscenas.get(indiceEscena).X) % widthImagen;
         float Y = (float) ((y - (maxPantalla - pixelY)) * factorY + listaEscenas.get(indiceEscena).Y);
         float distancia;
 
+        // Si hay hotspot de salto se comprueba si se ha pulsado
         if (hayHotSpot) {
-            Log.i("INFO_touch", new String("coordenadas esquina superior: " + ((listaEscenas.get(indiceEscena).X)) + " , " + (listaEscenas.get(indiceEscena).Y)));
-            Log.i("INFO_touch", new String("coordenadas con operacion: " + X + " , " + Y));
-            Log.i("INFO_touch", new String("coordenadas parametro: " + x + " , " + y));
-            Log.i("INFO_touch", new String("factorX: " + factorX + " factorY " + factorY));
-
             int siguientePos = posRuta + 1;
             int siguienteEscena = ruta.get(siguientePos);
 
+            // Se ha pulsado si la distancia entre la pulsación y el centro del hotspot
+            // es menor que el radio del hotspot
             distancia = (float) Math.sqrt(Math.pow(listaEscenas.get(indiceEscena).listaHotspotJump.get(siguienteEscena).x - X, 2) + Math.pow(listaEscenas.get(indiceEscena).listaHotspotJump.get(siguienteEscena).y - Y, 2));
             if (listaEscenas.get(indiceEscena).listaHotspotJump.get(siguienteEscena).radio > distancia) {
                 return listaEscenas.get(indiceEscena).listaHotspotJump.get(siguienteEscena);
             }
         }
 
+        // Se comprueba si se ha pulsado alguno de los hotspot de información
         for (int i = 0; i < listaEscenas.get(indiceEscena).listaHotspotInfo.size(); ++i) {
+            // Se ha pulsado si la distancia entre la pulsación y el centro del hotspot
+            // es menor que el radio del hotspot
             distancia = (float) Math.sqrt(Math.pow(listaEscenas.get(indiceEscena).listaHotspotInfo.get(i).x - X, 2) + Math.pow(listaEscenas.get(indiceEscena).listaHotspotInfo.get(i).y - Y, 2));
             if (listaEscenas.get(indiceEscena).listaHotspotInfo.get(i).radio > distancia) {
                 HotspotInfo auxI = listaEscenas.get(indiceEscena).listaHotspotInfo.get(i);
@@ -359,12 +372,19 @@ public class PanoramaView extends View {
         return null;
     }
 
+    /**
+     * Método para cambiar de escena
+     * @param hotspot hotspot de salto que nos llevará a la siguiente escena
+     */
     public void cambiarEscena(HotspotJump hotspot) {
         indiceEscena = hotspot.getEscena();
         posRuta += 1;
         cargarImagen();
     }
 
+    /**
+     * Método para retroceder a la escena anterior
+     */
     public void retrocederEscena() {
         if(posRuta > 0) {
             posRuta -= 1;
@@ -373,6 +393,10 @@ public class PanoramaView extends View {
         }
     }
 
+    /**
+     * Método para calcular la orientación de la flecha
+     * @return dirección de la flecha
+     */
     public int fijarFlecha() {
         if (hayHotSpot) {
             int siguientePos = posRuta + 1;
@@ -423,27 +447,37 @@ public class PanoramaView extends View {
 
     }
 
+    /**
+     * Método para obtener el zoom de la escena actual
+     * @return zoom de la escena actual
+     */
     public float getZoom() {
         return listaEscenas.get(indiceEscena).zoom;
     }
 
+    /**
+     * Método para aplicar el zoom a la escena actual
+     * @param scaleFactor nuevo zoom
+     */
     public void aplicarZoom(float scaleFactor) {
         listaEscenas.get(indiceEscena).zoom = scaleFactor;
 
-        Log.i("INFO_Zoom", new String(" ZOOM: " + listaEscenas.get(indiceEscena).zoom));
-
+        // Calculamos el nuevo ancho y alto escalado
         widthScale = (int) (widthScreen * listaEscenas.get(indiceEscena).zoom);
         heightScale = (int) (heightScreen * listaEscenas.get(indiceEscena).zoom);
 
+        // Calculamos el nuevo desplazamiento vertical por grado
         int alturaIni = (int) (heightImagen - heightScale) / 2;
         desplaPorGradoVertical = alturaIni / 45f;
 
+        // Calculamos las nuevas escalas de los ejes
         scaleX = ((float) pixelX) / widthScale;
         scaleY = ((float) pixelY) / heightScale;
 
         matrix = new Matrix();
         matrix.postScale(scaleX, scaleY);
 
+        // Actualizamos la X e Y de la escena
         listaEscenas.get(indiceEscena).X = (int) (listaEscenas.get(indiceEscena).norte + orientacionNorma * desplaPorGrado - widthScale / 2);
         if (alturaIni + inclinacionNorma * desplaPorGradoVertical < 0) {
             listaEscenas.get(indiceEscena).Y = 0;
@@ -456,27 +490,11 @@ public class PanoramaView extends View {
         }
     }
 
-    // Método para generar las rutas de prueba a usar en la APP
+    /**
+     * Método para generar las rutas de prueba a usar en la APP
+     */
     private void crearRutaPrueba() {
         listaEscenas = new ArrayList<Escena>();
-        /*
-        Map<Integer, HotspotJump> listaHotspotsJ = new HashMap<>();
-        Map<Integer, HotspotJump> listaHotspotsJ2 = new HashMap<>();
-        ArrayList<HotspotInfo> listaHotspotsI = new ArrayList<>();
-        ArrayList<HotspotInfo> listaHotspotsI2 = new ArrayList<>();
-        HotspotJump h1 = new HotspotJump(1000, 500, 100, 1, R.drawable.pin);
-        HotspotJump h2 = new HotspotJump(1000, 1000, 100, 0, R.drawable.pin);
-        String title = "Info de prueba";
-        String descrip = "Esta sería la descripción";
-        HotspotInfo h3 = new HotspotInfo(2000, 500, 100, title, descrip, R.drawable.info);
-        listaHotspotsJ.put(1, h1);
-        listaHotspotsJ2.put(0, h2);
-        listaHotspotsI.add(h3);
-        */
-        /*
-        Escena escena1 = new Escena(R.drawable.escenario2, "Entrada ETSIIT", 0.8f, 2000, listaHotspotsJ, listaHotspotsI);
-        Escena escena2 = new Escena(R.drawable.imagen1, "Despacho Marcelino", 0.8f, 2000, listaHotspotsJ2, listaHotspotsI2);
-        */
 
         String title;
         String descrip;
@@ -554,6 +572,7 @@ public class PanoramaView extends View {
         HotspotInfo h9_1 = new HotspotInfo(4160, 1900, 100, title, descrip, R.drawable.info);
         listaHotspotsI9.add(h9_1);
         Escena escena9 = new Escena(R.drawable.imagen9, "Entrada Aula 1.5", 0.8f, 3800, listaHotspotsJ9, listaHotspotsI9);
+        /* ----------------------------- */
 
         listaEscenas.add(escena1);
         listaEscenas.add(escena2);

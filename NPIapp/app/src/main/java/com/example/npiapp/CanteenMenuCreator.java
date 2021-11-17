@@ -3,14 +3,6 @@ package com.example.npiapp;
 import static java.lang.Math.abs;
 import static java.lang.Math.round;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.biometric.BiometricManager;
-import androidx.cardview.widget.CardView;
-import androidx.core.content.ContextCompat;
-import androidx.lifecycle.ViewModelProvider;
-
 import android.animation.ObjectAnimator;
 import android.content.Intent;
 import android.hardware.Sensor;
@@ -18,7 +10,6 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -26,7 +17,12 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.biometric.BiometricManager;
 import androidx.biometric.BiometricPrompt;
+import androidx.core.content.ContextCompat;
+import androidx.lifecycle.ViewModelProvider;
 
 import java.util.concurrent.Executor;
 
@@ -43,7 +39,6 @@ public class CanteenMenuCreator extends AppCompatActivity implements SensorEvent
     private String[] mealsTypes = {"Primero", "Primero", "Segundo", "Segundo", "Postre", "Postre"};
     private int[] cardsIds = new int[numberOfPossibleMeals];
     float totalOrderPrice = 0;
-    public static final String REPLY = "npiapp.CanteenMenuCreator.REPLY";
 
     private SensorManager sensorManager;
     private Sensor sensorAccelerometer;
@@ -51,8 +46,6 @@ public class CanteenMenuCreator extends AppCompatActivity implements SensorEvent
     private long lastDetected = 0;
     private float umbralAceptar = 1.0f;
     private float umbralRechazar = 1.0f;
-
-    public static final int AUTENTICATION_REQUEST = 1;
 
     private Executor executor;
     private BiometricPrompt biometricPrompt;
@@ -66,6 +59,7 @@ public class CanteenMenuCreator extends AppCompatActivity implements SensorEvent
 
         ///////////////////////////////////////////////
 
+        // Se obtiene el sensor biométrico
         BiometricManager biometricManager = BiometricManager.from(this);
         switch (biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG)) {
             case BiometricManager.BIOMETRIC_SUCCESS:
@@ -85,6 +79,8 @@ public class CanteenMenuCreator extends AppCompatActivity implements SensorEvent
 
 
         executor = ContextCompat.getMainExecutor(this);
+        // Se define la autenticación, dentro se definen los métodos que se ejecutarán
+        // en las distintas situaciones que puedan ocurrir durante la autenticación
         biometricPrompt = new BiometricPrompt(CanteenMenuCreator.this,
                 executor, new BiometricPrompt.AuthenticationCallback() {
             @Override
