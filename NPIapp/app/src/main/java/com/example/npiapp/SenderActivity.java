@@ -10,11 +10,12 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class SenderActivity extends AppCompatActivity implements OutcomingNfcManager.NfcActivity {
 
+    // Info a enviar por el NFC
     private String info;
+    // Sensor NFC
     private NfcAdapter nfcAdapter;
+    // Lógica de envío
     private OutcomingNfcManager outcomingNfccallback;
-
-    public static final String ENVIO_NFC = "com.example.emisornfc.ENVIO_NFC";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,6 +24,7 @@ public class SenderActivity extends AppCompatActivity implements OutcomingNfcMan
 
         Log.d("NFC", "activity launched");
 
+        // Se obtiene el sensor NFC
         this.nfcAdapter = NfcAdapter.getDefaultAdapter(this);
 
         if (nfcAdapter == null) {
@@ -34,29 +36,37 @@ public class SenderActivity extends AppCompatActivity implements OutcomingNfcMan
                 Toast.makeText(this, "NFC disabled on this device. Turn on to proceed", Toast.LENGTH_SHORT).show();
             }
 
+            // Se obtiene la información a enviar a través del NFC
             Intent intent = getIntent();
             info = intent.getStringExtra(CanteenMenu.INFO_NFC);
 
-            // encapsulate sending logic in a separate class
+            // Obtenemos la lógica de envío
             this.outcomingNfccallback = new OutcomingNfcManager(this);
+
+            // Iniciamos el envío de la etiqueta NFC
             this.nfcAdapter.setOnNdefPushCompleteCallback(outcomingNfccallback, this);
             this.nfcAdapter.setNdefPushMessageCallback(outcomingNfccallback, this);
         }
     }
 
+    /**
+     * Método para obtener la información a enviar en la etiqueta
+     * @return información a enviar
+     */
     @Override
     public String getOutcomingMessage() {
         return info;
     }
 
+    /**
+     * Método que se ejecuta al completar el envío
+     */
     @Override
     public void signalResult() {
-        // this will be triggered when NFC message is sent to a device.
-        // should be triggered on UI thread. We specify it explicitly
-        // cause onNdefPushComplete is called from the Binder thread
         runOnUiThread(() ->
                 Toast.makeText(SenderActivity.this, "Beaming complete", Toast.LENGTH_SHORT).show());
 
+        // Se finaliza la actividad de envío NFC
         Intent replyIntent = new Intent(SenderActivity.this, CanteenMenu.class);
         setResult(RESULT_OK, replyIntent);
         finish();
