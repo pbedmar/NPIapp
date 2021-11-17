@@ -240,7 +240,7 @@ public class CanteenMenu extends AppCompatActivity {
     }
 
     /*
-    Recibe la respuesta de la actividad de recogida del pedido SenderActivity.
+    Recibe la respuesta de la actividad de recogida del pedido ReceiverActivity.
     Si el pedido se ha recogido correctamente, se actualiza la base de datos para reflejar esto.
      */
     @Override
