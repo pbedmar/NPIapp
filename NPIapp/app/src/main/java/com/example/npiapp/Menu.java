@@ -4,9 +4,11 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import androidx.annotation.NonNull;
 
-import java.util.ArrayList;
-
-
+/*
+Clase que contiene un atributo por cada columna de la tabla. Contiene también métodos para acceder
+a estos atributos. Se utilizan ciertas etiquetas para indicar qué atributo corresponde con la clave
+primaria (@PrimaryKey) o para aplicar restricciones (@NonNull).
+*/
 @Entity(tableName = "menu")
 public class Menu {
 

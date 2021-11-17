@@ -6,6 +6,9 @@ import androidx.room.Query;
 
 import java.util.List;
 
+/*
+Contiene distintos métodos asociados cada uno con una consulta SQL. Estos métodos nos permiten acceder y modificar la base de datos.
+ */
 @Dao
 public interface MenuDao {
 

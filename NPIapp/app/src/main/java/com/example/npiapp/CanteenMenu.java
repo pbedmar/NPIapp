@@ -22,6 +22,14 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+/*
+Muestra una lista de los pedidos realizados. También, en la parte inferior de la pantalla,
+muestra un spinner donde aparecen las fechas de los próximos tres días,
+para pedir un menú en alguno de ellos pulsando el botón Encargar.
+
+En el momento en el que se pide algún menú, este aparece en la lista de menús encargados.
+Se muestran los platos elegidos, el precio total del menú y si ha sido recogido o no.
+ */
 public class CanteenMenu extends AppCompatActivity {
 
     public static final String DATE = "npiapp.CanteenMenu.DATE";
@@ -33,6 +41,10 @@ public class CanteenMenu extends AppCompatActivity {
 
     protected static MenuViewModel mMenuViewModel;
 
+    /*
+    Genera la actividad y conecta la base de datos.
+    Además, llama a los métodos generateDates(), loadSpinnerOptions() y loadOrders()
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,6 +71,9 @@ public class CanteenMenu extends AppCompatActivity {
 
     }
 
+    /*
+    Genera las fechas del día de hoy y para los tres días siguientes y las almacena como atributo
+     */
     protected void generateDates() {
         Calendar calendar = Calendar.getInstance();
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -86,6 +101,10 @@ public class CanteenMenu extends AppCompatActivity {
         todayDate = today;
     }
 
+    /*
+    Carga las fechas generadas en el método anterior como opciones del spinner
+    que permite elegir en qué día realizar el pedido
+     */
     protected void loadSpinnerOptions() {
         List<String> datesList = Arrays.asList(spinnerDates);
 
@@ -99,6 +118,11 @@ public class CanteenMenu extends AppCompatActivity {
         spinner.setAdapter(datesArrayAdapter);
     }
 
+    /*
+    Listener del botón Encargar. Cuando el botón es pulsado, el método lanza un Intent a la clase
+    CanteenMenuCreator(). Esta clase permite realizar un pedido para un día en concreto
+    (este día es enviado como parámetro del Intent, y proviene del valor seleccionado en el spinner)
+     */
     public void launchCanteenMenuCreator(View view) {
         Intent intent = new Intent(this, CanteenMenuCreator.class);
 
@@ -106,15 +130,27 @@ public class CanteenMenu extends AppCompatActivity {
         String fecha = spinner.getSelectedItem().toString();
 
         Menu menu = mMenuViewModel.getMenuOnSpecificDate(fecha);
-        if(menu.getDay_with_order() >= 1){
+        if (menu.getDay_with_order() >= 1) {
             Toast.makeText(this, "Ya hay un pedido realizado en esa fecha", Toast.LENGTH_LONG).show();
-        }
-        else {
+        } else {
             intent.putExtra(DATE, fecha);
             startActivity(intent);
         }
     }
 
+    /*
+    Para el día actual y los tres días siguientes, muestra los menús que se han solicitado leyendo
+    desde la base de datos. Se muestran los platos elegidos, el precio total del menú y si ha sido
+    recogido o no. Para programar esto, creamos un ScrollView que contiene un LinearLayout al que
+    se añaden RelativeLayout programáticamente (cada uno de ellos representa un encargo).
+
+    De la misma forma, a cada RelativeLayout se le añaden varios LinearLayout conteniendo los platos.
+    El realizar  esto de forma programática (y no directamente en el xml) permite que las vistas
+    sean escalables y puedan cambiar dinámicamente.
+
+    Para cada uno de los RelativeLayout se añade un onClickListener, para que en el caso de que
+    se haga click sobre ellos, se inicie la actividad de recogida del pedido SenderActivity.
+     */
     @SuppressLint("ResourceAsColor")
     protected void loadOrders() {
 
@@ -148,8 +184,8 @@ public class CanteenMenu extends AppCompatActivity {
                 date.setText(dates[i]);
 
                 TextView totalPrice = newCard.findViewById(R.id.price_ordered_menu_text);
-                int parteEntera = (int)total_price;
-                int parteDecimal = (int)((total_price - parteEntera)*100);
+                int parteEntera = (int) total_price;
+                int parteDecimal = (int) ((total_price - parteEntera) * 100);
                 totalPrice.setText(Integer.toString(parteEntera) + "." + Integer.toString(parteDecimal));
 
                 LinearLayout layoutOrderedMeals = (LinearLayout) newCard.findViewById(R.id.meals_layout);
@@ -168,9 +204,9 @@ public class CanteenMenu extends AppCompatActivity {
                 float finalTotal_price = total_price;
                 newCard.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View v) {
-                        String mealsNamesString = String.join("\n",mealsNames);
-                        String infoToNFC = "FECHA;"+date_+";TUI;"+MainActivity.TUI+";PLATOS;"+mealsNamesString+
-                                ";PRECIO;"+Float.toString(finalTotal_price);
+                        String mealsNamesString = String.join("\n", mealsNames);
+                        String infoToNFC = "FECHA;" + date_ + ";TUI;" + MainActivity.TUI + ";PLATOS;" + mealsNamesString +
+                                ";PRECIO;" + Float.toString(finalTotal_price);
 
                         onClickCard(v, infoToNFC);
                     }
@@ -179,8 +215,7 @@ public class CanteenMenu extends AppCompatActivity {
                 TextView textEstado = newCard.findViewById(R.id.estadoText);
                 if (menu.getDay_with_order() == 2) {
                     textEstado.setText("Pedido recogido");
-                }
-                else {
+                } else {
                     textEstado.setText("Pedido sin recoger");
                 }
 
@@ -189,36 +224,40 @@ public class CanteenMenu extends AppCompatActivity {
         }
     }
 
+    /*
+    Extensión del listener onClick() del método anterior
+     */
     protected void onClickCard(View v, String info) {
         String[] campos = info.split(";");
         Menu menu = mMenuViewModel.getMenuOnSpecificDate(campos[1]);
-        if(menu.getDay_with_order() != 2){
+        if (menu.getDay_with_order() != 2) {
             Intent intent = new Intent(this, SenderActivity.class);
             intent.putExtra(INFO_NFC, info);
             startActivityForResult(intent, 1);
-        }
-        else {
+        } else {
             Toast.makeText(this, "Pedido ya registrado", Toast.LENGTH_LONG).show();
         }
     }
 
+    /*
+    Recibe la respuesta de la actividad de recogida del pedido SenderActivity.
+    Si el pedido se ha recogido correctamente, se actualiza la base de datos para reflejar esto.
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(requestCode == 1) {
-            if(resultCode == RESULT_OK) {
+        if (requestCode == 1) {
+            if (resultCode == RESULT_OK) {
                 Intent intent = new Intent(this, ReceiverActivity.class);
                 startActivityForResult(intent, 2);
             }
-        }
-        else if(requestCode == 2) {
+        } else if (requestCode == 2) {
             String fecha = data.getStringExtra(ReceiverActivity.RESPO_NFC);
-            if(fecha != null) {
-                if(resultCode == RESULT_OK) {
+            if (fecha != null) {
+                if (resultCode == RESULT_OK) {
                     mMenuViewModel.setOrderedOnSpecificDate(fecha, 2);
-                }
-                else if(resultCode == RESULT_CANCELED) {
+                } else if (resultCode == RESULT_CANCELED) {
                     mMenuViewModel.setOrderedOnSpecificDate(fecha, 1);
                 }
             }
