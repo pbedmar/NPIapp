@@ -58,7 +58,17 @@ public class CanteenMenuCreator extends AppCompatActivity implements SensorEvent
     private BiometricPrompt biometricPrompt;
     private BiometricPrompt.PromptInfo promptInfo;
 
+    /*
+    Inicializa diferentes variables necesarias para la identificación biométrica,
+    así como declara dos submétodos onAuthenticationError() y onAuthenticationSucceeded(),
+    que devuelven el control al Intent CanteenMenu según si la huella es correcta o no.
 
+    También modifica el título de la actividad, conecta la base de datos y lee desde ésta los datos
+    del menú que se va a ofrecer, almacenandose en distintos atributos.
+
+    A continuación, llama al método setCardViewMedia() y finalmente inicia la detección de
+    movimiento usando el acelerómetro.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,7 +92,6 @@ public class CanteenMenuCreator extends AppCompatActivity implements SensorEvent
                 Log.e("MY_APP_TAG", "Biometric features are none enrolled.");
                 break;
         }
-
 
         executor = ContextCompat.getMainExecutor(this);
         biometricPrompt = new BiometricPrompt(CanteenMenuCreator.this,
@@ -140,16 +149,16 @@ public class CanteenMenuCreator extends AppCompatActivity implements SensorEvent
 
         ///////////////////////////////////////////////
 
-        // download extras received from calling activity
+        // descarga de extras recibidos
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             date = extras.getString(CanteenMenu.DATE);
         }
 
-        // set activity title
+        // titulo de la actividad
         this.setTitle("Encargo día " + date);
 
-        // access database & retrieve current menu
+        // conexión con la base de datos
         mMenuViewModel = new ViewModelProvider(this).get(MenuViewModel.class);
         menuToday = mMenuViewModel.getMenuOnSpecificDate(date);
 
@@ -158,7 +167,7 @@ public class CanteenMenuCreator extends AppCompatActivity implements SensorEvent
 
         setCardViewMedia();
 
-        // start motion detection
+        // iniciar la detección de movimiento
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         sensorAccelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
         sensorManager.registerListener(this, sensorAccelerometer, SensorManager.SENSOR_DELAY_GAME);
@@ -177,6 +186,10 @@ public class CanteenMenuCreator extends AppCompatActivity implements SensorEvent
         sensorManager.registerListener(this, sensorAccelerometer, SensorManager.SENSOR_DELAY_GAME);
     }
 
+    /*
+    Para cada uno de los platos, rellena una tarjeta del mazo. Los atributos inicializados
+    en el método anterior contienen la información que es añadida a las tarjetas.
+     */
     protected void setCardViewMedia() {
 
         RelativeLayout currentView = (RelativeLayout) findViewById(R.id.menu_options_layout);
@@ -203,6 +216,11 @@ public class CanteenMenuCreator extends AppCompatActivity implements SensorEvent
         }
     }
 
+    /*
+    Desplaza la tarjeta desde el centro de la pantalla hacia la izda en caso de agitar en el eje x,
+    y desplaza hacia abajo en el caso de agitar en el eje z. Añade realismo a la aplicación al
+    generar la sensación de que agitar tiene un efecto real sobre el mazo.
+     */
     protected void cardAnimation(RelativeLayout relativeLayout, boolean ordered, String axis) {
         float magnitude = -10000f;
         if (ordered) {
@@ -215,6 +233,10 @@ public class CanteenMenuCreator extends AppCompatActivity implements SensorEvent
 
     }
 
+    /*
+    Avanza a la siguiente tarjeta del mazo llamando a cardAnimation().
+    Si la tarjeta es la última de todas, llama a showOrderSummary().
+     */
     protected void nextCard(String animationAxis) {
 
         RelativeLayout relativeLayout = (RelativeLayout) findViewById(cardsIds[currentCard]);
@@ -227,6 +249,12 @@ public class CanteenMenuCreator extends AppCompatActivity implements SensorEvent
         currentCard++;
     }
 
+    /*
+    Muestra un resumen del pedido, donde se mencionan los platos adquiridos, su precio y
+    el precio total. En la misma tarjeta donde se muestra este resumen, aparecen los botones
+    confirmar y cancelar. Si pulsamos en confirmar, se llama al método confirmOrder(), en el
+    otro caso se llama a cancelOrder()
+     */
     protected void showOrderSummary() {
         LinearLayout linearLayout_order = (LinearLayout) findViewById(R.id.order_layout);
         linearLayout_order.setVisibility(View.VISIBLE);
@@ -252,12 +280,34 @@ public class CanteenMenuCreator extends AppCompatActivity implements SensorEvent
         }
 
         TextView totalPrice = (TextView) findViewById(R.id.total_price_text);
-        int parteEntera = (int)totalOrderPrice;
-        int parteDecimal = (int)(round((totalOrderPrice - parteEntera)*100));
+        int parteEntera = (int) totalOrderPrice;
+        int parteDecimal = (int) (round((totalOrderPrice - parteEntera) * 100));
         totalPrice.setText(Integer.toString(parteEntera) + "." + Integer.toString(parteDecimal));
     }
 
+    /*
+    Método que se ejecuta de forma continua para tomar datos del acelerómetro lineal
+    (acelerómetro que anula el efecto de la gravedad).
 
+    También, si se dan las condiciones adecuadas, es el responsable de ejecutar otros
+    métodos que nos hacen avanzar por el mazo de tarjetas.
+
+    Aunque se ejecute de forma continua, sólo tiene en cuenta las mediciones
+    tomadas cada 100 milisegundos.
+
+    Las señales obtenidas del acelerómetro son información en bruto que hay que procesar para
+    obtener datos útiles. La información viene expresada con un valor para cada eje.
+    Este valor representa la aceleración medida en ese eje. Cuando la aceleración en el eje x supera
+    un umbral, rechazamos el plato mostrado en pantalla. Cuando la aceleración en el eje z supera
+    otro umbral, aceptamos el plato mostrado en pantalla.
+
+    Aún así, esta no es la única restricción que utilizamos: para afinar más a la hora de medir la
+    agitación del dispositivo y prevenir falsos positivos, si al medir el valor en un eje detectamos
+    movimiento en el otro eje también, descartamos la detección.
+
+    Una vez que hemos detectado un movimiento válido, aceptamos o descartamos el plato según
+    corresponda y pasamos a la siguiente tarjeta llamando al método nextCard()
+     */
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
         Sensor usedSensor = sensorEvent.sensor;
@@ -276,16 +326,13 @@ public class CanteenMenuCreator extends AppCompatActivity implements SensorEvent
                         Log.i("Info_acce_X", Float.toString(x));
                         Log.i("Info_acce_Z", Float.toString(z));
 
-                        if(x > 2.0f && abs(z) < umbralRechazar) {
-                            Log.d("pedro", "X Left axis: " + x);
-                            Log.d("pedro", "Left shake detected");
+                        if (x > 2.0f && abs(z) < umbralRechazar) {
+                            Log.d("pedro", "x shake detected");
                             orderedMeals[currentCard] = false;
                             lastDetected = System.currentTimeMillis();
                             nextCard("translationX");
-                        }
-                        else if(z > 3.5f && abs(x) < umbralAceptar) {
-                            Log.d("pedro", "X Right axis: " + x);
-                            Log.d("pedro", "Right shake detected");
+                        } else if (z > 3.5f && abs(x) < umbralAceptar) {
+                            Log.d("pedro", "z shake detected");
                             orderedMeals[currentCard] = true;
                             lastDetected = System.currentTimeMillis();
                             nextCard("translationY");
@@ -300,14 +347,22 @@ public class CanteenMenuCreator extends AppCompatActivity implements SensorEvent
         return b ? 1 : 0;
     }
 
+    /*
+    Se devuelve a CanteenMenu un código indicando que no se ha completado el pedido.
+     */
     public void cancelOrder(View view) {
         Intent replyIntent = new Intent();
         setResult(RESULT_CANCELED, replyIntent);
         finish();
     }
 
+    /*
+    Se comprueba que el usuario tiene saldo suficiente para poder pagar el pedido.
+    Si es así, se llama al módulo de autenticación biométrica.
+    Si no, se devuelve a CanteenMenu un código indicando que no se ha completado el pedido.
+     */
     public void confirmOrder(View view) {
-        if(MainActivity.saldo < totalOrderPrice) {
+        if (MainActivity.saldo < totalOrderPrice) {
             Toast.makeText(getApplicationContext(),
                     "Saldo insuficiente", Toast.LENGTH_LONG)
                     .show();
@@ -315,12 +370,12 @@ public class CanteenMenuCreator extends AppCompatActivity implements SensorEvent
             Intent replyIntent = new Intent();
             setResult(RESULT_CANCELED, replyIntent);
             finish();
-        }
-        else{
+        } else {
             biometricPrompt.authenticate(promptInfo);
         }
     }
 
+    // método necesario para el funcionamiento del acelerómetro
     @Override
     public void onAccuracyChanged(Sensor sensor, int i) {
 

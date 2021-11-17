@@ -61,11 +61,10 @@ public class Guidance extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
-        if(result != null) {
-            if(result.getContents() == null) {
+        if (result != null) {
+            if (result.getContents() == null) {
                 Toast.makeText(this, "Escaner fallido", Toast.LENGTH_LONG).show();
-            }
-            else {
+            } else {
                 Toast.makeText(this, "Escaneado QR", Toast.LENGTH_LONG).show();
                 Log.i("INFO_escaner", result.getContents());
                 String lectura = result.getContents();
@@ -75,8 +74,7 @@ public class Guidance extends AppCompatActivity {
                 Log.i("INFO_pos", Integer.toString(pos));
                 inicio.setSelection(pos);
             }
-        }
-        else {
+        } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
     }
@@ -86,28 +84,24 @@ public class Guidance extends AppCompatActivity {
         String elemInicio = (String) inicio.getSelectedItem();
         Spinner fin = findViewById(R.id.spinner_fin_ruta);
         String elemFin = (String) fin.getSelectedItem();
-        if(elemInicio.equals("")) {
+        if (elemInicio.equals("")) {
             String text = "Rellenar el campo inicio";
             Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
-        }
-        else if(elemFin.equals("")) {
+        } else if (elemFin.equals("")) {
             String text = "Rellenar el campo fin";
             Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
-        }
-        else {
+        } else {
             Map<String, ArrayList<Integer>> ruta1 = rutas.get(elemInicio);
             ArrayList<Integer> ruta2;
-            if(ruta1 != null) {
+            if (ruta1 != null) {
                 ruta2 = ruta1.get(elemFin);
-            }
-            else {
+            } else {
                 ruta2 = null;
             }
-            if(ruta2 == null) {
+            if (ruta2 == null) {
                 String text = "Ruta no disponible";
                 Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
-            }
-            else {
+            } else {
                 Intent intent = new Intent(this, PanoramaController.class);
                 intent.putExtra(EXTRA_MESSAGE, ruta2);
                 startActivity(intent);
@@ -115,7 +109,7 @@ public class Guidance extends AppCompatActivity {
         }
     }
 
-    // MÃ©todo para generar las rutas de prueba a usar en la APP
+    // Método para generar las rutas de prueba a usar en la APP
     private void crearRutaPrueba() {
         rutas = new HashMap<String, Map<String, ArrayList<Integer>>>();
         ArrayList<Integer> ruta1 = new ArrayList<Integer>();
