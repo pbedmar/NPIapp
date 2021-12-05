@@ -475,6 +475,22 @@ public class PanoramaController extends AppCompatActivity implements SensorEvent
                         // Fijamos la descripción de la información
                         TextView d = findViewById(R.id.descrip_info);
                         d.setText(((HotspotInfo) hotspot).getDescrip());
+
+                        TextView descripInfo = findViewById(R.id.descrip_info);
+                        descripInfo.setOnTouchListener(new View.OnTouchListener() {
+                            @Override
+                            public boolean onTouch(View view, MotionEvent motionEvent) {
+                                if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+                                    if(speaker.isSpeaking()) {
+                                        speaker.stop();
+                                    }
+                                    else {
+                                        speaker.speak((String) descripInfo.getText(), TextToSpeech.QUEUE_FLUSH, null);
+                                    }
+                                }
+                                return false;
+                            }
+                        });
                     }
                 }
             }
