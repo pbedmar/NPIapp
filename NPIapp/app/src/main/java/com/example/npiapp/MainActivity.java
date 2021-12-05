@@ -114,6 +114,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
                 reconocido = reconocido || reconocerIrCanteenMenu(datos);
 
+                reconocido = reconocido || reconocerIrAsistente(datos);
+
                 if(!reconocido) {
                     speaker.speak("Reconocimiento fallido. Vuelve a intentarlo", TextToSpeech.QUEUE_FLUSH, null);
                 }
@@ -157,6 +159,18 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         boolean reconocido = matcher.find();
         if(reconocido){
             Intent intent = new Intent(MainActivity.this, CanteenMenu.class);
+            startActivity(intent);
+        }
+
+        return reconocido;
+    }
+
+    boolean reconocerIrAsistente(String datos) {
+        Pattern pattern = Pattern.compile("(.)*(abr(.)*|entr(.)*)(.)*asistente(.)*", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(datos);
+        boolean reconocido = matcher.find();
+        if(reconocido){
+            Intent intent = new Intent(MainActivity.this, Asistente.class);
             startActivity(intent);
         }
 
@@ -221,6 +235,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     public void launchCanteenMenu(View view) {
         Intent intent = new Intent(this, CanteenMenu.class);
+        startActivity(intent);
+    }
+
+    public void launchAsistente(View view) {
+        Intent intent = new Intent(this, Asistente.class);
         startActivity(intent);
     }
 }

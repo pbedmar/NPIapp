@@ -160,78 +160,12 @@ public class Guidance extends AppCompatActivity implements SensorEventListener {
     }
 
     boolean reconocerIrAsistente(String datos) {
-        ArrayList<Pattern> patterns = new ArrayList<>();
-        patterns.add(Pattern.compile("(.)*(inici(.)*|emp(i)?ez(.)*)([a-z]|[A-Z]| )*ruta([a-z]|[A-Z]| )*desde ([a-z]|[A-Z]| )+ hasta ([a-z]|[A-Z]| )+", Pattern.CASE_INSENSITIVE));
-
-        boolean reconocido = false;
-        int i = 0;
-        boolean saltar = false;
-        while(!reconocido && i < patterns.size()) {
-            Matcher matcher = patterns.get(i).matcher(datos);
-            Log.i("Datos", datos);
-            reconocido = matcher.find();
-            if(reconocido) {
-                Log.i("Datos", Integer.toString(i));
-                Spinner inicio = findViewById(R.id.spinner_inicio_ruta);
-                Spinner fin = findViewById(R.id.spinner_fin_ruta);
-                int posInicio;
-                int posFin;
-
-                switch (i) {
-                    case 0:
-                        ArrayAdapter adapterInicio = (ArrayAdapter) inicio.getAdapter();
-                        ArrayAdapter adapterFin = (ArrayAdapter) fin.getAdapter();
-                        posInicio = adapterInicio.getPosition(matcher.group(8));
-                        posFin = adapterFin.getPosition(matcher.group(9));
-
-                        if(posInicio != -1 && posFin != -1) {
-                            inicio.setSelection(posInicio);
-                            fin.setSelection(posFin);
-                            saltar = true;
-                        }
-                        else {
-                            speaker.speak("La ruta no está disponible", TextToSpeech.QUEUE_FLUSH, null);
-                        }
-                        break;
-                }
-
-
-
-                /*
-                if(saltar) {
-                    inicio = findViewById(R.id.spinner_inicio_ruta);
-                    String elemInicio = (String) inicio.getSelectedItem();
-                    fin = findViewById(R.id.spinner_fin_ruta);
-                    String elemFin = (String) fin.getSelectedItem();
-                    if (elemInicio.equals("")) {
-                        String text = "Rellenar el campo inicio";
-                        Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
-                    } else if (elemFin.equals("")) {
-                        String text = "Rellenar el campo fin";
-                        Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
-                    } else {
-                        Map<String, ArrayList<Integer>> ruta1 = rutas.get(elemInicio);
-                        ArrayList<Integer> ruta2;
-                        if (ruta1 != null) {
-                            ruta2 = ruta1.get(elemFin);
-                        } else {
-                            ruta2 = null;
-                        }
-                        if (ruta2 == null) {
-                            String text = "Ruta no disponible";
-                            Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
-                        } else {
-                            Intent intent = new Intent(this, PanoramaController.class);
-                            intent.putExtra(EXTRA_MESSAGE, ruta2);
-                            startActivity(intent);
-                        }
-                    }
-                }
-
-                 */
-            }
-
-            i += 1;
+        Pattern pattern = Pattern.compile("(.)*(abr(.)*|entr(.)*)(.)*asistente(.)*", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(datos);
+        boolean reconocido = matcher.find();
+        if(reconocido){
+            Intent intent = new Intent(Guidance.this, Asistente.class);
+            startActivity(intent);
         }
 
         return reconocido;

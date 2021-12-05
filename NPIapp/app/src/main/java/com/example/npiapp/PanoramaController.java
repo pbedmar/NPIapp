@@ -159,6 +159,8 @@ public class PanoramaController extends AppCompatActivity implements SensorEvent
 
                 reconocido = reconocido || reconocerRetroceder(datos);
 
+                reconocido = reconocido || reconocerIrAsistente(datos);
+
                 if(!reconocido) {
                     speaker.speak("Reconocimiento fallido. Vuelve a intentarlo", TextToSpeech.QUEUE_FLUSH, null);
                 }
@@ -182,6 +184,18 @@ public class PanoramaController extends AppCompatActivity implements SensorEvent
             }
         });
         speaker.setLanguage(Locale.getDefault());
+    }
+
+    boolean reconocerIrAsistente(String datos) {
+        Pattern pattern = Pattern.compile("(.)*(abr(.)*|entr(.)*)(.)*asistente(.)*", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(datos);
+        boolean reconocido = matcher.find();
+        if(reconocido){
+            Intent intent = new Intent(PanoramaController.this, Asistente.class);
+            startActivity(intent);
+        }
+
+        return reconocido;
     }
 
     boolean reconocerAvanzar(String datos) {

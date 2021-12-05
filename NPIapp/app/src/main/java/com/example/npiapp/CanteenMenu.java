@@ -137,6 +137,8 @@ public class CanteenMenu extends AppCompatActivity implements SensorEventListene
 
                 reconocido = reconocido || reconocerElegirFecha(datos);
 
+                reconocido = reconocido || reconocerIrAsistente(datos);
+
                 if(!reconocido) {
                     speaker.speak("Reconocimiento fallido. Vuelve a intentarlo", TextToSpeech.QUEUE_FLUSH, null);
                 }
@@ -397,6 +399,18 @@ public class CanteenMenu extends AppCompatActivity implements SensorEventListene
             }
 
             i += 1;
+        }
+
+        return reconocido;
+    }
+
+    boolean reconocerIrAsistente(String datos) {
+        Pattern pattern = Pattern.compile("(.)*(abr(.)*|entr(.)*)(.)*asistente(.)*", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(datos);
+        boolean reconocido = matcher.find();
+        if(reconocido){
+            Intent intent = new Intent(CanteenMenu.this, Asistente.class);
+            startActivity(intent);
         }
 
         return reconocido;
