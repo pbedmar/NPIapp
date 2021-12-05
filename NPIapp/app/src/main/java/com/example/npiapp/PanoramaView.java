@@ -343,6 +343,20 @@ public class PanoramaView extends View {
         }
     }
 
+    public boolean moverEscena(int i) {
+        int nuevaPos = posRuta + i;
+        if(nuevaPos >= 0 && nuevaPos < ruta.size()) {
+            posRuta = nuevaPos;
+            indiceEscena = ruta.get(posRuta);
+            cargarImagen();
+
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
     /**
      * Método para gestionar la pulsación en la escena
      *
