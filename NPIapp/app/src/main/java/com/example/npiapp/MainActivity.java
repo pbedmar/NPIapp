@@ -64,6 +64,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         // Obtenemos el sensor de proximidad
         proximitySensor = sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
 
+        speaker = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int i) {
+
+            }
+        });
+        speaker.setLanguage(Locale.getDefault());
 
         //speechRecognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
@@ -116,6 +123,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
                 reconocido = reconocido || reconocerIrAsistente(datos);
 
+                Log.i("Datos", Boolean.toString(reconocido));
+
                 if(!reconocido) {
                     speaker.speak("Reconocimiento fallido. Vuelve a intentarlo", TextToSpeech.QUEUE_FLUSH, null);
                 }
@@ -131,14 +140,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
             }
         });
-
-        speaker = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
-            @Override
-            public void onInit(int i) {
-
-            }
-        });
-        speaker.setLanguage(Locale.getDefault());
     }
 
     boolean reconocerIrGuidance(String datos) {
@@ -206,6 +207,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         if (sensorEvent.sensor.getType() == Sensor.TYPE_PROXIMITY) {
             float distancia = sensorEvent.values[0];
             if (distancia < 1) {
+                if(speaker.isSpeaking()) {
+                    speaker.stop();
+                }
                 speechRecognizer.startListening(speechRecognizerIntent);
                 inicio = System.nanoTime();
                 Toast.makeText(MainActivity.this,

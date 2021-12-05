@@ -445,6 +445,9 @@ public class CanteenMenuCreator extends AppCompatActivity implements SensorEvent
             if (sensorEvent.sensor.getType() == Sensor.TYPE_PROXIMITY) {
                 float distancia = sensorEvent.values[0];
                 if (distancia < 1) {
+                    if(speaker.isSpeaking()) {
+                        speaker.stop();
+                    }
                     speechRecognizer.startListening(speechRecognizerIntent);
                     inicio = System.nanoTime();
                     Toast.makeText(this,
