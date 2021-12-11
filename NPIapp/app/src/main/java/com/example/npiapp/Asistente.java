@@ -1,6 +1,8 @@
 package com.example.npiapp;
 
 import android.os.Bundle;
+import android.util.DisplayMetrics;
+import android.util.Log;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -14,7 +16,7 @@ public class Asistente extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_asistente);
 
-        String frameVideo = "<html><body><iframe allow=\"microphone;\" width=\"350\" height=\"430\" src=\"https://console.dialogflow.com/api-client/demo/embedded/c335863e-0d0d-4d1a-a294-97fc3e84dffd\"> </iframe></body></html>";
+        String frameVideo = "<html><body><iframe width=\"100%\" height=\"100%\" allow=\"microphone;\" src=\"https://console.dialogflow.com/api-client/demo/embedded/c335863e-0d0d-4d1a-a294-97fc3e84dffd\"></iframe></body></html>";
 
         WebView pagina = findViewById(R.id.pagina);
         pagina.setWebViewClient(new WebViewClient(){
