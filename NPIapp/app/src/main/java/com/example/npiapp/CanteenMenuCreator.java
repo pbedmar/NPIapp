@@ -52,6 +52,7 @@ public class CanteenMenuCreator extends AppCompatActivity implements SensorEvent
     private boolean[] orderedMeals = new boolean[numberOfPossibleMeals];
     private float[] mealsPrices = new float[numberOfPossibleMeals];
     private String[] mealsNames = new String[numberOfPossibleMeals];
+    private String[] mealsAllergens = new String[numberOfPossibleMeals];
     private String[] mealsTypes = {"Primero", "Primero", "Segundo", "Segundo", "Postre", "Postre"};
     private int[] cardsIds = new int[numberOfPossibleMeals];
     float totalOrderPrice = 0;
@@ -178,6 +179,7 @@ public class CanteenMenuCreator extends AppCompatActivity implements SensorEvent
 
         mealsNames = menuToday.getMealsNamesArray();
         mealsPrices = menuToday.getMealsPricesArray();
+        mealsAllergens = menuToday.getMealsAllergensArray();
 
         setCardViewMedia();
 
@@ -469,6 +471,11 @@ public class CanteenMenuCreator extends AppCompatActivity implements SensorEvent
         Intent replyIntent = new Intent();
         setResult(RESULT_CANCELED, replyIntent);
         finish();
+    }
+
+    public void onClickCard(View view) {
+        Log.d("speaker", mealsAllergens[currentCard]);
+        speaker.speak(mealsAllergens[currentCard], TextToSpeech.QUEUE_FLUSH, null);
     }
 
     /*
