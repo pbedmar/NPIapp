@@ -5,8 +5,8 @@
 
     <uses-permission android:name="android.permission.USE_BIOMETRIC" />
     <uses-permission android:name="android.permission.NFC" />
-    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <uses-feature
         android:name="android.hardware.nfc"
@@ -32,6 +32,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme.Light">
         <activity
+            android:name=".Asistente"
+            android:hardwareAccelerated="true"
+            android:exported="false" />
+        <activity
             android:name=".CanteenMenuCreator"
             android:exported="true" />
         <activity
@@ -46,24 +50,27 @@
             android:parentActivityName=".MainActivity" />
         <activity
             android:name=".PanoramaController"
-            android:label="@string/guidance_title"
-            android:exported="true" />
+            android:exported="true"
+            android:label="@string/guidance_title" />
         <activity
             android:name=".SenderActivity"
-            android:label="Emisor NFC"
-            android:exported="true" />
+            android:exported="true"
+            android:label="Emisor NFC" />
         <activity
             android:name=".ReceiverActivity"
-            android:label="Receptor NFC"
-            android:exported="true">
+            android:exported="true"
+            android:label="Receptor NFC">
             <intent-filter>
                 <action android:name="android.nfc.action.NDEF_DISCOVERED" />
+
                 <category android:name="android.intent.category.DEFAULT" />
+
                 <data android:mimeType="text/plain" />
             </intent-filter>
         </activity>
         <activity
             android:name=".MainActivity"
+            android:hardwareAccelerated="true"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

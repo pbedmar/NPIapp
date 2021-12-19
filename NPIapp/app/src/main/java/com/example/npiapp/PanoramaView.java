@@ -343,6 +343,20 @@ public class PanoramaView extends View {
         }
     }
 
+    public boolean moverEscena(int i) {
+        int nuevaPos = posRuta + i;
+        if(nuevaPos >= 0 && nuevaPos < ruta.size()) {
+            posRuta = nuevaPos;
+            indiceEscena = ruta.get(posRuta);
+            cargarImagen();
+
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
     /**
      * Método para gestionar la pulsación en la escena
      *
@@ -523,7 +537,7 @@ public class PanoramaView extends View {
         listaHotspotsJ1.put(1, h1_1);
         ArrayList<HotspotInfo> listaHotspotsI1 = new ArrayList<>();
         title = "Servicios UGR";
-        descrip = "Al entrar a mano al fondo de la sala encontrarás la Secretaría, donde puedes" +
+        descrip = "Al entrar, al fondo de la sala encontrarás la Secretaría, donde puedes" +
                 " realizar trámites administrativos. Además al entrar a mano derecha encontrarás" +
                 " una escaleras que se llevarán a la biblioteca (primera planta), y a los despachos" +
                 " de los profesores (segunda planta).";

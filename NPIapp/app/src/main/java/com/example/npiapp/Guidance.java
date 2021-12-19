@@ -3,7 +3,15 @@ package com.example.npiapp;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.speech.RecognitionListener;
+import android.speech.RecognizerIntent;
+import android.speech.SpeechRecognizer;
+import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -15,13 +23,30 @@ import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import com.journeyapps.barcodescanner.CaptureActivity;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import android.os.Bundle;
 
-public class Guidance extends AppCompatActivity {
+public class Guidance extends AppCompatActivity implements SensorEventListener {
+
+    public static final Integer RecordAudioRequestCode = 1;
+    private SpeechRecognizer speechRecognizer;
+    final Intent speechRecognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+    private TextToSpeech speaker;
+    // Manejador de sensores
+    private SensorManager sensorManager;
+    // Sensor de proximidad
+    private Sensor proximitySensor;
+    long inicio;
+    long fin;
 
     public static final String EXTRA_MESSAGE = "com.example.beta360.MESSAGE";
 
@@ -32,6 +57,8 @@ public class Guidance extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        inicio = 0;
+        fin = 0;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_guidance);
 
@@ -54,6 +81,94 @@ public class Guidance extends AppCompatActivity {
         qrScan.setPrompt("Escanear un QR");
         // Se fija que el lector esté siempre en orientación vertical
         qrScan.setOrientationLocked(true);
+
+        // Creamos el manejador de sensores
+        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        // Obtenemos el sensor de proximidad
+        proximitySensor = sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
+
+        //speechRecognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
+        speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
+        speechRecognizer.setRecognitionListener(new RecognitionListener() {
+            @Override
+            public void onReadyForSpeech(Bundle bundle) {
+
+            }
+
+            @Override
+            public void onBeginningOfSpeech() {
+
+            }
+
+            @Override
+            public void onRmsChanged(float v) {
+                fin = System.nanoTime();
+                if(v < 0 && (fin - inicio)/1000000000 > 3)
+                    speechRecognizer.stopListening();
+            }
+
+            @Override
+            public void onBufferReceived(byte[] bytes) {
+
+            }
+
+            @Override
+            public void onEndOfSpeech() {
+
+            }
+
+            @Override
+            public void onError(int i) {
+
+            }
+
+            @Override
+            public void onResults(Bundle bundle) {
+
+                ArrayList<String> data = bundle.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+                String datos = data.get(0);
+
+                boolean reconocido = false;
+
+                reconocido = reconocido || reconocerIrAsistente(datos);
+
+                if(!reconocido) {
+                    speaker.speak("Reconocimiento fallido. Vuelve a intentarlo", TextToSpeech.QUEUE_FLUSH, null);
+                }
+            }
+
+            @Override
+            public void onPartialResults(Bundle bundle) {
+
+            }
+
+            @Override
+            public void onEvent(int i, Bundle bundle) {
+
+            }
+        });
+
+        speaker = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int i) {
+
+            }
+        });
+        speaker.setLanguage(Locale.getDefault());
+    }
+
+    boolean reconocerIrAsistente(String datos) {
+        Pattern pattern = Pattern.compile("(.)*(abr(.)*|entr(.)*)(.)*asistente(.)*", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(datos);
+        boolean reconocido = matcher.find();
+        if(reconocido){
+            Intent intent = new Intent(Guidance.this, Asistente.class);
+            startActivity(intent);
+        }
+
+        return reconocido;
     }
 
     /**
@@ -132,5 +247,40 @@ public class Guidance extends AppCompatActivity {
         Map<String, ArrayList<Integer>> finRuta1 = new HashMap<String, ArrayList<Integer>>();
         finRuta1.put("Aula 1.5", ruta1);
         rutas.put("Entrada ETSIIT", finRuta1);
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent sensorEvent) {
+        // Gestión del sensor de proximidad
+        if (sensorEvent.sensor.getType() == Sensor.TYPE_PROXIMITY) {
+            float distancia = sensorEvent.values[0];
+            if (distancia < 1) {
+                if(speaker.isSpeaking()) {
+                    speaker.stop();
+                }
+                speechRecognizer.startListening(speechRecognizerIntent);
+                inicio = System.nanoTime();
+                Toast.makeText(this,
+                        "Escuchando...", Toast.LENGTH_LONG)
+                        .show();
+            }
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int i) {
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        sensorManager.registerListener(this, proximitySensor, SensorManager.SENSOR_DELAY_GAME);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        sensorManager.unregisterListener(this, proximitySensor);
     }
 }

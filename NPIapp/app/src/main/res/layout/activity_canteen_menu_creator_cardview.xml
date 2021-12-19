@@ -12,7 +12,8 @@
         android:visibility="visible"
         card_view:cardBackgroundColor="@color/colorPrin"
         card_view:cardCornerRadius="4dp"
-        card_view:cardElevation="5dp">
+        card_view:cardElevation="5dp"
+        android:onClick="onClickCard">
 
         <TextView
             android:id="@+id/meal_type_text"

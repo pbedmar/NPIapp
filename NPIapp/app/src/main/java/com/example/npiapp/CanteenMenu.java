@@ -1,8 +1,18 @@
 package com.example.npiapp;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.speech.RecognitionListener;
+import android.speech.RecognizerIntent;
+import android.speech.SpeechRecognizer;
+import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -14,13 +24,18 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.lifecycle.ViewModelProvider;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /*
 Muestra una lista de los pedidos realizados. También, en la parte inferior de la pantalla,
@@ -30,8 +45,18 @@ para pedir un menú en alguno de ellos pulsando el botón Encargar.
 En el momento en el que se pide algún menú, este aparece en la lista de menús encargados.
 Se muestran los platos elegidos, el precio total del menú y si ha sido recogido o no.
  */
-public class CanteenMenu extends AppCompatActivity {
+public class CanteenMenu extends AppCompatActivity implements SensorEventListener {
 
+    public static final Integer RecordAudioRequestCode = 1;
+    private SpeechRecognizer speechRecognizer;
+    final Intent speechRecognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+    private TextToSpeech speaker;
+    // Manejador de sensores
+    private SensorManager sensorManager;
+    // Sensor de proximidad
+    private Sensor proximitySensor;
+    long inicio;
+    long fin;
     public static final String DATE = "npiapp.CanteenMenu.DATE";
     public static final String INFO_NFC = "npiapp.CanteenMenu.INFO_NFC";
     private final int numberOfDatesToShow = 3;
@@ -47,6 +72,8 @@ public class CanteenMenu extends AppCompatActivity {
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        inicio = 0;
+        fin = 0;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_canteen_menu);
 
@@ -57,12 +84,349 @@ public class CanteenMenu extends AppCompatActivity {
         loadOrders();
 
         Log.d("CanteenMenu", "OnCreate");
+
+        // Creamos el manejador de sensores
+        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        // Obtenemos el sensor de proximidad
+        proximitySensor = sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
+
+        //speechRecognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
+        speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
+        speechRecognizer.setRecognitionListener(new RecognitionListener() {
+            @Override
+            public void onReadyForSpeech(Bundle bundle) {
+
+            }
+
+            @Override
+            public void onBeginningOfSpeech() {
+
+            }
+
+            @Override
+            public void onRmsChanged(float v) {
+                fin = System.nanoTime();
+                if(v < 0 && (fin - inicio)/1000000000 > 3)
+                    speechRecognizer.stopListening();
+            }
+
+            @Override
+            public void onBufferReceived(byte[] bytes) {
+
+            }
+
+            @Override
+            public void onEndOfSpeech() {
+
+            }
+
+            @Override
+            public void onError(int i) {
+
+            }
+
+            @Override
+            public void onResults(Bundle bundle) {
+
+                ArrayList<String> data = bundle.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+                String datos = data.get(0);
+
+                boolean reconocido = false;
+
+                reconocido = reconocido || reconocerElegirFecha(datos);
+
+                reconocido = reconocido || reconocerIrAsistente(datos);
+
+                if(!reconocido) {
+                    speaker.speak("Reconocimiento fallido. Vuelve a intentarlo", TextToSpeech.QUEUE_FLUSH, null);
+                }
+            }
+
+            @Override
+            public void onPartialResults(Bundle bundle) {
+
+            }
+
+            @Override
+            public void onEvent(int i, Bundle bundle) {
+
+            }
+        });
+
+        speaker = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int i) {
+
+            }
+        });
+        speaker.setLanguage(Locale.getDefault());
+    }
+
+    boolean reconocerElegirFecha(String datos) {
+        ArrayList<Pattern> patterns = new ArrayList<>();
+        patterns.add(Pattern.compile("(.)*(reserv(.)*|ped(.)*)([a-z]|[A-Z]| )*pasado([a-z]|[A-Z]| )*mañana(.)*", Pattern.CASE_INSENSITIVE));
+        patterns.add(Pattern.compile("(.)*(reserv(.)*|ped(.)*)([a-z]|[A-Z]| )*mañana(.)*", Pattern.CASE_INSENSITIVE));
+        patterns.add(Pattern.compile("(.)*(reserv(.)*|ped(.)*)([a-z]|[A-Z]| )*dentro([a-z]|[A-Z]| )*de([a-z]|[A-Z]| )*2([a-z]|[A-Z]| )*días(.)*", Pattern.CASE_INSENSITIVE));
+        patterns.add(Pattern.compile("(.)*(reserv(.)*|ped(.)*)([a-z]|[A-Z]| )*para([a-z]|[A-Z]| )*([0-9]{2})([a-z]|[A-Z]| )+([0-9]{2})([a-z]|[A-Z]| )*", Pattern.CASE_INSENSITIVE));
+        patterns.add(Pattern.compile("(.)*(reserv(.)*|ped(.)*)([a-z]|[A-Z]| )*para([a-z]|[A-Z]| )*([0-9]{2})([a-z]|[A-Z]| )+([0-9])([a-z]|[A-Z]| )*", Pattern.CASE_INSENSITIVE));
+        patterns.add(Pattern.compile("(.)*(reserv(.)*|ped(.)*)([a-z]|[A-Z]| )*para([a-z]|[A-Z]| )*([0-9])([a-z]|[A-Z]| )+([0-9]{2})([a-z]|[A-Z]| )*", Pattern.CASE_INSENSITIVE));
+        patterns.add(Pattern.compile("(.)*(reserv(.)*|ped(.)*)([a-z]|[A-Z]| )*para([a-z]|[A-Z]| )*([0-9])([a-z]|[A-Z]| )+([0-9])([a-z]|[A-Z]| )*", Pattern.CASE_INSENSITIVE));
+        patterns.add(Pattern.compile("(.)*(reserv(.)*|ped(.)*)([a-z]|[A-Z]| )*para([a-z]|[A-Z]| )*([0-9]{2})([a-z]|[A-Z]| )+(enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|octubre|noviembre|diciembre)(.)*", Pattern.CASE_INSENSITIVE));
+        patterns.add(Pattern.compile("(.)*(reserv(.)*|ped(.)*)([a-z]|[A-Z]| )*para([a-z]|[A-Z]| )*([0-9])([a-z]|[A-Z]| )+(enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|octubre|noviembre|diciembre)(.)*", Pattern.CASE_INSENSITIVE));
+
+        boolean reconocido = false;
+        int i = 0;
+        boolean saltar = false;
+        while(!reconocido && i < patterns.size()) {
+            Matcher matcher = patterns.get(i).matcher(datos);
+            Log.i("Datos", datos);
+            reconocido = matcher.find();
+            if(reconocido) {
+                Log.i("Datos", Integer.toString(i));
+                Spinner spinner = (Spinner) findViewById(R.id.date_spinner);
+                int pos;
+                Calendar calendar = Calendar.getInstance();
+                SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+                Date hoy = calendar.getTime();
+                String year = dateFormat.format(hoy).split("/")[2];
+                String fecha;
+
+
+                switch (i) {
+                    case 0:
+                        pos = 1;
+                        spinner.setSelection(pos);
+                        saltar = true;
+                        break;
+                    case 1:
+                        pos = 0;
+                        spinner.setSelection(pos);
+                        saltar = true;
+                        break;
+                    case 2:
+                        pos = 2;
+                        spinner.setSelection(pos);
+                        saltar = true;
+                        break;
+                    case 3:
+                        fecha = matcher.group(7) + "/" + matcher.group(9) + "/" + year;
+
+                        ArrayAdapter adapter = (ArrayAdapter) spinner.getAdapter();
+                        pos = adapter.getPosition(fecha);
+                        Log.i("Datos", Integer.toString(pos));
+
+                        if(pos != -1) {
+                            spinner.setSelection(pos);
+                            saltar = true;
+                        }
+                        else {
+                            speaker.speak("La fecha no está disponible", TextToSpeech.QUEUE_FLUSH, null);
+                        }
+                        break;
+                    case 4:
+                        fecha = matcher.group(7) + "/" + "0" +  matcher.group(9) + "/" + year;
+
+                        adapter = (ArrayAdapter) spinner.getAdapter();
+                        pos = adapter.getPosition(fecha);
+                        Log.i("Datos", Integer.toString(pos));
+
+                        if(pos != -1) {
+                            spinner.setSelection(pos);
+                            saltar = true;
+                        }
+                        else {
+                            speaker.speak("La fecha no está disponible", TextToSpeech.QUEUE_FLUSH, null);
+                        }
+                        break;
+                    case 5:
+                        fecha = "0" + matcher.group(7) + "/" + matcher.group(9) + "/" + year;
+                        Log.i("Datos", fecha);
+                        adapter = (ArrayAdapter) spinner.getAdapter();
+                        pos = adapter.getPosition(fecha);
+                        Log.i("Datos", Integer.toString(pos));
+
+                        if(pos != -1) {
+                            spinner.setSelection(pos);
+                            saltar = true;
+                        }
+                        else {
+                            speaker.speak("La fecha no está disponible", TextToSpeech.QUEUE_FLUSH, null);
+                        }
+                        break;
+                    case 6:
+                        fecha = "0" + matcher.group(7) + "/" + "0" + matcher.group(9) + "/" + year;
+
+                        adapter = (ArrayAdapter) spinner.getAdapter();
+                        pos = adapter.getPosition(fecha);
+                        Log.i("Datos", Integer.toString(pos));
+
+                        if(pos != -1) {
+                            spinner.setSelection(pos);
+                            saltar = true;
+                        }
+                        else {
+                            speaker.speak("La fecha no está disponible", TextToSpeech.QUEUE_FLUSH, null);
+                        }
+                        break;
+                    case 7:
+                        fecha = matcher.group(7);
+
+                        switch (matcher.group(9)) {
+                            case "enero":
+                                fecha += "/" + "01" + "/" + year;
+                                break;
+                            case "febrero":
+                                fecha += "/" + "02" + "/" + year;
+                                break;
+                            case "marzo":
+                                fecha += "/" + "03" + "/" + year;
+                                break;
+                            case "abril":
+                                fecha += "/" + "04" + "/" + year;
+                                break;
+                            case "mayo":
+                                fecha += "/" + "05" + "/" + year;
+                                break;
+                            case "junio":
+                                fecha += "/" + "06" + "/" + year;
+                                break;
+                            case "julio":
+                                fecha += "/" + "07" + "/" + year;
+                                break;
+                            case "agosto":
+                                fecha += "/" + "08" + "/" + year;
+                                break;
+                            case "septiembre":
+                                fecha += "/" + "09" + "/" + year;
+                                break;
+                            case "octubre":
+                                fecha += "/" + "10" + "/" + year;
+                                break;
+                            case "noviembre":
+                                fecha += "/" + "11" + "/" + year;
+                                break;
+                            case "diciembre":
+                                fecha += "/" + "12" + "/" + year;
+                                break;
+                            default:
+                                fecha = "";
+                        }
+
+                        adapter = (ArrayAdapter) spinner.getAdapter();
+                        pos = adapter.getPosition(fecha);
+
+                        if(pos != -1) {
+                            spinner.setSelection(pos);
+                            saltar = true;
+                        }
+                        else {
+                            speaker.speak("La fecha no está disponible", TextToSpeech.QUEUE_FLUSH, null);
+                        }
+                        break;
+                    case 8:
+                        fecha = "0" + matcher.group(7);
+
+                        switch (matcher.group(9)) {
+                            case "enero":
+                                fecha += "/" + "01" + "/" + year;
+                                break;
+                            case "febrero":
+                                fecha += "/" + "02" + "/" + year;
+                                break;
+                            case "marzo":
+                                fecha += "/" + "03" + "/" + year;
+                                break;
+                            case "abril":
+                                fecha += "/" + "04" + "/" + year;
+                                break;
+                            case "mayo":
+                                fecha += "/" + "05" + "/" + year;
+                                break;
+                            case "junio":
+                                fecha += "/" + "06" + "/" + year;
+                                break;
+                            case "julio":
+                                fecha += "/" + "07" + "/" + year;
+                                break;
+                            case "agosto":
+                                fecha += "/" + "08" + "/" + year;
+                                break;
+                            case "septiembre":
+                                fecha += "/" + "09" + "/" + year;
+                                break;
+                            case "octubre":
+                                fecha += "/" + "10" + "/" + year;
+                                break;
+                            case "noviembre":
+                                fecha += "/" + "11" + "/" + year;
+                                break;
+                            case "diciembre":
+                                fecha += "/" + "12" + "/" + year;
+                                break;
+                            default:
+                                fecha = "";
+                        }
+
+                        adapter = (ArrayAdapter) spinner.getAdapter();
+                        pos = adapter.getPosition(fecha);
+
+                        if(pos != -1) {
+                            spinner.setSelection(pos);
+                            saltar = true;
+                        }
+                        else {
+                            speaker.speak("La fecha no está disponible", TextToSpeech.QUEUE_FLUSH, null);
+                        }
+                        break;
+                }
+
+                if(saltar) {
+                    Intent intent = new Intent(this, CanteenMenuCreator.class);
+
+                    spinner = findViewById(R.id.date_spinner);
+                    fecha = spinner.getSelectedItem().toString();
+
+                    Menu menu = mMenuViewModel.getMenuOnSpecificDate(fecha);
+                    if (menu.getDay_with_order() >= 1) {
+                        Toast.makeText(this, "Ya hay un pedido realizado en esa fecha", Toast.LENGTH_LONG).show();
+                    } else {
+                        intent.putExtra(DATE, fecha);
+                        startActivity(intent);
+                    }
+                }
+            }
+
+            i += 1;
+        }
+
+        return reconocido;
+    }
+
+    boolean reconocerIrAsistente(String datos) {
+        Pattern pattern = Pattern.compile("(.)*(abr(.)*|entr(.)*)(.)*asistente(.)*", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(datos);
+        boolean reconocido = matcher.find();
+        if(reconocido){
+            Intent intent = new Intent(CanteenMenu.this, Asistente.class);
+            startActivity(intent);
+        }
+
+        return reconocido;
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         loadOrders();
+        sensorManager.registerListener(this, proximitySensor, SensorManager.SENSOR_DELAY_GAME);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        sensorManager.unregisterListener(this, proximitySensor);
     }
 
     @Override
@@ -262,5 +626,28 @@ public class CanteenMenu extends AppCompatActivity {
                 }
             }
         }
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent sensorEvent) {
+        // Gestión del sensor de proximidad
+        if (sensorEvent.sensor.getType() == Sensor.TYPE_PROXIMITY) {
+            float distancia = sensorEvent.values[0];
+            if (distancia < 1) {
+                if(speaker.isSpeaking()) {
+                    speaker.stop();
+                }
+                speechRecognizer.startListening(speechRecognizerIntent);
+                inicio = System.nanoTime();
+                Toast.makeText(this,
+                        "Escuchando...", Toast.LENGTH_LONG)
+                        .show();
+            }
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int i) {
+
     }
 }

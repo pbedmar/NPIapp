@@ -8,16 +8,24 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.speech.RecognitionListener;
+import android.speech.RecognizerIntent;
+import android.speech.SpeechRecognizer;
+import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.ArrayList;
+import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class PanoramaController extends AppCompatActivity implements SensorEventListener {
@@ -36,6 +44,13 @@ public class PanoramaController extends AppCompatActivity implements SensorEvent
         public static final Integer FLECHA_ABAJO_IZQ = 6;
         public static final Integer FLECHA_ABAJO_DER = 7;
     }
+
+    public static final Integer RecordAudioRequestCode = 1;
+    private SpeechRecognizer speechRecognizer;
+    final Intent speechRecognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+    private TextToSpeech speaker;
+    long inicio;
+    long fin;
 
     // Límites del zoom
     private final float MAX_ZOOM = 1.0f;
@@ -62,6 +77,8 @@ public class PanoramaController extends AppCompatActivity implements SensorEvent
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        inicio = 0;
+        fin = 0;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_panorama_controller);
 
@@ -92,6 +109,209 @@ public class PanoramaController extends AppCompatActivity implements SensorEvent
 
         // Se indica que no se está mostrando info
         mostrandoInfo = false;
+
+        //speechRecognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
+        speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
+        speechRecognizer.setRecognitionListener(new RecognitionListener() {
+            @Override
+            public void onReadyForSpeech(Bundle bundle) {
+
+            }
+
+            @Override
+            public void onBeginningOfSpeech() {
+
+            }
+
+            @Override
+            public void onRmsChanged(float v) {
+                fin = System.nanoTime();
+                if(v < 0 && (fin - inicio)/1000000000 > 3)
+                    speechRecognizer.stopListening();
+            }
+
+            @Override
+            public void onBufferReceived(byte[] bytes) {
+
+            }
+
+            @Override
+            public void onEndOfSpeech() {
+
+            }
+
+            @Override
+            public void onError(int i) {
+
+            }
+
+            @Override
+            public void onResults(Bundle bundle) {
+
+                ArrayList<String> data = bundle.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+                String datos = data.get(0);
+
+                boolean reconocido = false;
+
+                reconocido = reconocido || reconocerAvanzar(datos);
+
+                reconocido = reconocido || reconocerRetroceder(datos);
+
+                reconocido = reconocido || reconocerIrAsistente(datos);
+
+                if(!reconocido) {
+                    speaker.speak("Reconocimiento fallido. Vuelve a intentarlo", TextToSpeech.QUEUE_FLUSH, null);
+                }
+            }
+
+            @Override
+            public void onPartialResults(Bundle bundle) {
+
+            }
+
+            @Override
+            public void onEvent(int i, Bundle bundle) {
+
+            }
+        });
+
+        speaker = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int i) {
+
+            }
+        });
+        speaker.setLanguage(Locale.getDefault());
+    }
+
+    boolean reconocerIrAsistente(String datos) {
+        Pattern pattern = Pattern.compile("(.)*(abr(.)*|entr(.)*)(.)*asistente(.)*", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(datos);
+        boolean reconocido = matcher.find();
+        if(reconocido){
+            Intent intent = new Intent(PanoramaController.this, Asistente.class);
+            startActivity(intent);
+        }
+
+        return reconocido;
+    }
+
+    boolean reconocerAvanzar(String datos) {
+        ArrayList<Pattern> patterns = new ArrayList<>();
+        patterns.add(Pattern.compile("(.)*(avanz(.)*)([a-z]|[A-Z]| )*siguiente([a-z]|[A-Z]| )*escena([a-z]|[A-Z]| )*", Pattern.CASE_INSENSITIVE));
+        patterns.add(Pattern.compile("(.)*(avanz(.)*)([a-z]|[A-Z]| )*([1-3])([a-z]|[A-Z]| )*escena([a-z]|[A-Z]| )*", Pattern.CASE_INSENSITIVE));
+        patterns.add(Pattern.compile("(.)*(avanz(.)*)([a-z]|[A-Z]| )*(una|dos|tres)([a-z]|[A-Z]| )*escena([a-z]|[A-Z]| )*", Pattern.CASE_INSENSITIVE));
+
+        boolean reconocido = false;
+        int i = 0;
+        while (!reconocido && i < patterns.size()) {
+            Matcher matcher = patterns.get(i).matcher(datos);
+            Log.i("Datos", datos);
+            reconocido = matcher.find();
+            if (reconocido) {
+                Log.i("Datos", Integer.toString(i));
+
+                switch (i) {
+                    case 0:
+                        if(!panorama.moverEscena(1)) {
+                            speaker.speak("Escena no disponible", TextToSpeech.QUEUE_FLUSH, null);
+                        }
+                        break;
+                    case 1:
+                        int num = Integer.parseInt(matcher.group(5));
+
+                        Log.i("Datos", matcher.group(5));
+                        if(!panorama.moverEscena(num)) {
+                            speaker.speak("Escena no disponible", TextToSpeech.QUEUE_FLUSH, null);
+                        }
+                        break;
+                    case 2:
+                        num = 0;
+
+                        switch (matcher.group(5)) {
+                            case "una":
+                                num = 1;
+                                break;
+                            case "dos":
+                                num = 2;
+                                break;
+                            case "tres":
+                                num = 3;
+                                break;
+                        }
+
+                        Log.i("Datos", matcher.group(5));
+                        if(!panorama.moverEscena(num)) {
+                            speaker.speak("Escena no disponible", TextToSpeech.QUEUE_FLUSH, null);
+                        }
+                        break;
+                }
+            }
+
+            i += 1;
+        }
+
+        return reconocido;
+    }
+
+    boolean reconocerRetroceder(String datos) {
+        ArrayList<Pattern> patterns = new ArrayList<>();
+        patterns.add(Pattern.compile("(.)*(retroced(.)*)([a-z]|[A-Z]| )*anterior([a-z]|[A-Z]| )*escena([a-z]|[A-Z]| )*", Pattern.CASE_INSENSITIVE));
+        patterns.add(Pattern.compile("(.)*(retroced(.)*)([a-z]|[A-Z]| )*([1-3])([a-z]|[A-Z]| )*escena([a-z]|[A-Z]| )*", Pattern.CASE_INSENSITIVE));
+        patterns.add(Pattern.compile("(.)*(retroced(.)*)([a-z]|[A-Z]| )*(una|dos|tres)([a-z]|[A-Z]| )*escena([a-z]|[A-Z]| )*", Pattern.CASE_INSENSITIVE));
+
+        boolean reconocido = false;
+        int i = 0;
+        while (!reconocido && i < patterns.size()) {
+            Matcher matcher = patterns.get(i).matcher(datos);
+            Log.i("Datos", datos);
+            reconocido = matcher.find();
+            if (reconocido) {
+                Log.i("Datos", Integer.toString(i));
+
+                switch (i) {
+                    case 0:
+                        if(!panorama.moverEscena(-1)) {
+                            speaker.speak("Escena no disponible", TextToSpeech.QUEUE_FLUSH, null);
+                        }
+                        break;
+                    case 1:
+                        int num = Integer.parseInt(matcher.group(5));
+
+                        Log.i("Datos", matcher.group(5));
+                        if(!panorama.moverEscena(-num)) {
+                            speaker.speak("Escena no disponible", TextToSpeech.QUEUE_FLUSH, null);
+                        }
+                        break;
+                    case 2:
+                        num = 0;
+
+                        switch (matcher.group(5)) {
+                            case "una":
+                                num = 1;
+                                break;
+                            case "dos":
+                                num = 2;
+                                break;
+                            case "tres":
+                                num = 3;
+                                break;
+                        }
+
+                        Log.i("Datos", matcher.group(5));
+                        if(!panorama.moverEscena(-num)) {
+                            speaker.speak("Escena no disponible", TextToSpeech.QUEUE_FLUSH, null);
+                        }
+                        break;
+                }
+            }
+
+            i += 1;
+        }
+
+        return reconocido;
     }
 
     /**
@@ -149,7 +369,14 @@ public class PanoramaController extends AppCompatActivity implements SensorEvent
             if (sensorEvent.sensor.getType() == Sensor.TYPE_PROXIMITY) {
                 float distancia = sensorEvent.values[0];
                 if (distancia < 1) {
-                    panorama.retrocederEscena();
+                    if(speaker.isSpeaking()) {
+                        speaker.stop();
+                    }
+                    speechRecognizer.startListening(speechRecognizerIntent);
+                    inicio = System.nanoTime();
+                    Toast.makeText(this,
+                            "Escuchando...", Toast.LENGTH_LONG)
+                            .show();
                 }
             }
             // Gestión del sensor de rotación del vector
@@ -265,6 +492,22 @@ public class PanoramaController extends AppCompatActivity implements SensorEvent
                         // Fijamos la descripción de la información
                         TextView d = findViewById(R.id.descrip_info);
                         d.setText(((HotspotInfo) hotspot).getDescrip());
+
+                        TextView descripInfo = findViewById(R.id.descrip_info);
+                        descripInfo.setOnTouchListener(new View.OnTouchListener() {
+                            @Override
+                            public boolean onTouch(View view, MotionEvent motionEvent) {
+                                if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+                                    if(speaker.isSpeaking()) {
+                                        speaker.stop();
+                                    }
+                                    else {
+                                        speaker.speak((String) descripInfo.getText(), TextToSpeech.QUEUE_FLUSH, null);
+                                    }
+                                }
+                                return false;
+                            }
+                        });
                     }
                 }
             }

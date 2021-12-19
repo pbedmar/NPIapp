@@ -10,6 +10,10 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.speech.RecognitionListener;
+import android.speech.RecognizerIntent;
+import android.speech.SpeechRecognizer;
+import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -24,10 +28,22 @@ import androidx.biometric.BiometricPrompt;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 
+import java.util.ArrayList;
+import java.util.Locale;
 import java.util.concurrent.Executor;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class CanteenMenuCreator extends AppCompatActivity implements SensorEventListener {
 
+    public static final Integer RecordAudioRequestCode = 1;
+    private SpeechRecognizer speechRecognizer;
+    final Intent speechRecognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+    private TextToSpeech speaker;
+    // Sensor de proximidad
+    private Sensor proximitySensor;
+    long inicio;
+    long fin;
     private MenuViewModel mMenuViewModel;
     private Menu menuToday;
     private int numberOfPossibleMeals = 6;
@@ -36,6 +52,7 @@ public class CanteenMenuCreator extends AppCompatActivity implements SensorEvent
     private boolean[] orderedMeals = new boolean[numberOfPossibleMeals];
     private float[] mealsPrices = new float[numberOfPossibleMeals];
     private String[] mealsNames = new String[numberOfPossibleMeals];
+    private String[] mealsAllergens = new String[numberOfPossibleMeals];
     private String[] mealsTypes = {"Primero", "Primero", "Segundo", "Segundo", "Postre", "Postre"};
     private int[] cardsIds = new int[numberOfPossibleMeals];
     float totalOrderPrice = 0;
@@ -64,6 +81,8 @@ public class CanteenMenuCreator extends AppCompatActivity implements SensorEvent
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        inicio = 0;
+        fin = 0;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_canteen_menu_creator);
 
@@ -160,6 +179,7 @@ public class CanteenMenuCreator extends AppCompatActivity implements SensorEvent
 
         mealsNames = menuToday.getMealsNamesArray();
         mealsPrices = menuToday.getMealsPricesArray();
+        mealsAllergens = menuToday.getMealsAllergensArray();
 
         setCardViewMedia();
 
@@ -167,18 +187,104 @@ public class CanteenMenuCreator extends AppCompatActivity implements SensorEvent
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         sensorAccelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
         sensorManager.registerListener(this, sensorAccelerometer, SensorManager.SENSOR_DELAY_GAME);
+        // Obtenemos el sensor de proximidad
+        proximitySensor = sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
 
+        //speechRecognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
+        speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
+        speechRecognizer.setRecognitionListener(new RecognitionListener() {
+            @Override
+            public void onReadyForSpeech(Bundle bundle) {
+
+            }
+
+            @Override
+            public void onBeginningOfSpeech() {
+
+            }
+
+            @Override
+            public void onRmsChanged(float v) {
+                fin = System.nanoTime();
+                if(v < 0 && (fin - inicio)/1000000000 > 3)
+                    speechRecognizer.stopListening();
+            }
+
+            @Override
+            public void onBufferReceived(byte[] bytes) {
+
+            }
+
+            @Override
+            public void onEndOfSpeech() {
+
+            }
+
+            @Override
+            public void onError(int i) {
+
+            }
+
+            @Override
+            public void onResults(Bundle bundle) {
+
+                ArrayList<String> data = bundle.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+                String datos = data.get(0);
+
+                boolean reconocido = false;
+
+                reconocido = reconocido || reconocerIrAsistente(datos);
+
+                if(!reconocido) {
+                    speaker.speak("Reconocimiento fallido. Vuelve a intentarlo", TextToSpeech.QUEUE_FLUSH, null);
+                }
+            }
+
+            @Override
+            public void onPartialResults(Bundle bundle) {
+
+            }
+
+            @Override
+            public void onEvent(int i, Bundle bundle) {
+
+            }
+        });
+
+        speaker = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int i) {
+
+            }
+        });
+        speaker.setLanguage(Locale.getDefault());
+    }
+
+    boolean reconocerIrAsistente(String datos) {
+        Pattern pattern = Pattern.compile("(.)*(abr(.)*|entr(.)*)(.)*asistente(.)*", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(datos);
+        boolean reconocido = matcher.find();
+        if(reconocido){
+            Intent intent = new Intent(CanteenMenuCreator.this, Asistente.class);
+            startActivity(intent);
+        }
+
+        return reconocido;
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        sensorManager.unregisterListener(this, proximitySensor);
         sensorManager.unregisterListener(this, sensorAccelerometer);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        sensorManager.registerListener(this, proximitySensor, SensorManager.SENSOR_DELAY_GAME);
         sensorManager.registerListener(this, sensorAccelerometer, SensorManager.SENSOR_DELAY_GAME);
     }
 
@@ -337,6 +443,21 @@ public class CanteenMenuCreator extends AppCompatActivity implements SensorEvent
                 }
             }
         }
+        else {
+            if (sensorEvent.sensor.getType() == Sensor.TYPE_PROXIMITY) {
+                float distancia = sensorEvent.values[0];
+                if (distancia < 1) {
+                    if(speaker.isSpeaking()) {
+                        speaker.stop();
+                    }
+                    speechRecognizer.startListening(speechRecognizerIntent);
+                    inicio = System.nanoTime();
+                    Toast.makeText(this,
+                            "Escuchando...", Toast.LENGTH_LONG)
+                            .show();
+                }
+            }
+        }
     }
 
     public int boolToInt(boolean b) {
@@ -350,6 +471,11 @@ public class CanteenMenuCreator extends AppCompatActivity implements SensorEvent
         Intent replyIntent = new Intent();
         setResult(RESULT_CANCELED, replyIntent);
         finish();
+    }
+
+    public void onClickCard(View view) {
+        Log.d("speaker", mealsAllergens[currentCard]);
+        speaker.speak(mealsAllergens[currentCard], TextToSpeech.QUEUE_FLUSH, null);
     }
 
     /*
